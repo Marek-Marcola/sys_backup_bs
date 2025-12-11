@@ -518,7 +518,7 @@ if [ $ESHOW -eq 1 ]; then
         cat $f  2>&1
         { set +ex; } 2>/dev/null
         echo
-      fi 
+      fi
     done
   fi
 fi
