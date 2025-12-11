@@ -95,7 +95,7 @@ while [ $# -gt 0 ]; do
       shift
       ;;
     -s*)
-      [[ "$1" != "-S" ]] && ESHOW_REXP=${1:2}
+      [[ "$1" != "-s" ]] && ESHOW_REXP=${1:2}
       ESHOW=1
       QUIET=1
       shift
