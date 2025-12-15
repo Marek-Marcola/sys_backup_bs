@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="202512110061"
+VERSION_BIN="202512160061"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -18,7 +18,7 @@ PERM=0
 SYNC=0
 ELIST=0
 ESHOW=0
-ESHOW_REXP=""
+ESHOW_RE=""
 EEDIT=0
 HELP=0
 VERB=0
@@ -95,7 +95,7 @@ while [ $# -gt 0 ]; do
       shift
       ;;
     -s*)
-      [[ "$1" != "-s" ]] && ESHOW_REXP=${1:2}
+      [[ "$1" != "-s" ]] && ESHOW_RE=${1:2}
       ESHOW=1
       QUIET=1
       shift
@@ -144,7 +144,7 @@ if [ $HELP -eq 1 ]; then
   echo "$SN -L [-x]       # link show,run"
   echo ""
   echo "$SN -ls           # env list"
-  echo "$SN -s[rexp]      # env show"
+  echo "$SN -s[re]        # env show"
   echo "$SN -E            # env edit"
   echo ""
   echo "$SN -B [-p] [-x]  # online_backup,permanent,exec"
@@ -212,7 +212,7 @@ fi
 #
 if [ $INSTALL -eq 1 ]; then
   if [ -f bpgsql.sh ]; then
-    for d in /usr/local/backup/bin /pub/pkb/kb/data/001010-backup/001010-000170_script_bpgsql /pub/pkb/pb/playbooks/001010-backup/files; do
+    for d in /usr/local/backup/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
       if [ -d $d ]; then
         set -ex
         rsync -ai bpgsql.sh $d/bpgsql.sh
@@ -501,9 +501,9 @@ fi
 #
 if [ $ESHOW -eq 1 ]; then
   (( $s != 0 )) && echo; ((++s))
-  echo "$ID: stage: ENV-SHOW (rexp: *$ESHOW_REXP*)"
+  echo "$ID: stage: ENV-SHOW (rexp: *$ESHOW_RE*)"
 
-  if [ "$A" != "bpgsql" -a  "$ESHOW_REXP" = "" ]; then
+  if [ "$A" != "bpgsql" -a  "$ESHOW_RE" = "" ]; then
     if [ ! -f $EDIR/$A ]; then
       echo file not found: $EDIR/$A
     else
@@ -512,7 +512,7 @@ if [ $ESHOW -eq 1 ]; then
       { set +ex; } 2>/dev/null
     fi
   else
-    for f in $EDIR/*$ESHOW_REXP*; do
+    for f in $EDIR/*$ESHOW_RE*; do
       if [ -f $f ]; then
         set -ex
         cat $f  2>&1
