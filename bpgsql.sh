@@ -215,15 +215,25 @@ fi
 # stage: INSTALL
 #
 if [ $INSTALL -eq 1 ]; then
-  if [ -f bpgsql.sh ]; then
-    for d in /usr/local/backup/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
-      if [ -d $d ]; then
+  for d in /usr/local/backup/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
+    if [ -d $d ]; then
+      if [ -f bfs.sh ]; then
+        set -ex
+        rsync -ai bfs.sh $d/bfs.sh
+        { set +ex; } 2>/dev/null
+      fi
+      if [ -f bsync.sh ]; then
+        set -ex
+        rsync -ai bsync.sh $d/bsync.sh
+        { set +ex; } 2>/dev/null
+      fi
+      if [ -f bpgsql.sh ]; then
         set -ex
         rsync -ai bpgsql.sh $d/bpgsql.sh
         { set +ex; } 2>/dev/null
       fi
-    done
-  fi
+    fi
+  done
   exit 0
 fi
 
