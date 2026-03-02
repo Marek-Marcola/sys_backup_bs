@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="202512160061"
+VERSION_BIN="202503020061"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -162,6 +162,10 @@ if [ $HELP -eq 1 ]; then
   echo "  -b  = -B -R -x -l"
   echo "  -bp = -B -p -x -l"
   echo ""
+  echo "env variables available in env file:"
+  echo "  \$BADIR - base arch dir"
+  echo "  \$BVDIR - base vault name"
+  echo ""
   echo "crontab:"
   echo "  15 23 * * * /usr/local/backup/bin/bpgsql.sh -A bs-apn-api -b    >> /var/log/local/backup/bs-apn-api.log 2>&1"
   echo "  15 23 * * * /usr/local/backup/bin/bpgsql.sh -A bs-apn-api -b -S >> /var/log/local/backup/bs-apn-api.log 2>&1"
@@ -171,6 +175,8 @@ fi
 #
 # stage: CONFIG
 #
+: ${BADIR=/var/opt/backup/bpgsql}
+: ${BVDIR=/var/opt/bvault/bpgsql}
 : ${EDIR=/usr/local/backup/etc/bpgsql.d}
 
 if [ -f $(dirname $EDIR)/bpgsql.env ]; then
@@ -183,8 +189,6 @@ if [ -f $EDIR/$A ]; then
   EFILE="$EFILE $EDIR/$A"
 fi
 
-: ${BADIR=/var/backup/bpgsql}
-: ${BVDIR=/var/bvault/bpgsql}
 : ${ADIR=$BADIR/$A}
 : ${PDIR=$BADIR/$A/perm}
 : ${VDIR=$BVDIR/$A}
