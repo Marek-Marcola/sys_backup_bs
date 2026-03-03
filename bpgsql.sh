@@ -421,7 +421,7 @@ fi
 #
 if [ $ROTATE -ne 0 ]; then
   (( $s != 0 )) && echo; ((++s))
-  echo "$ID: stage: ROTATE (ANUM=$ANUM,EVAL=$EVAL)"
+  echo "$ID: stage: ROTATE (EVAL=$EVAL,ANUM=$ANUM)"
 
   if [ "$A" = "" ]; then
     echo "$ID: error: require app"
