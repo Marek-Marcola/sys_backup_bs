@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="202503020061"
+VERSION_BIN="202503030061"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -370,8 +370,10 @@ if [ $BACKUP_BASE -ne 0 ]; then
 
   if [ $EVAL -ne 0 ]; then
     if [ ! -d "$BACKUP_BASE_DIR" ]; then
-      echo directory not found: $BACKUP_BASE_DIR
-      exit 1
+      set -ex
+      mkdir -v $BACKUP_BASE_DIR
+      chown $PGUID:$PGGID $BACKUP_BASE_DIR
+      { set +ex; } 2>/dev/null
     fi
   fi
 
