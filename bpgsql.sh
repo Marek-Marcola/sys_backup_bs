@@ -370,10 +370,12 @@ if [ $BACKUP_BASE -ne 0 ]; then
 
   if [ $EVAL -ne 0 ]; then
     if [ ! -d "$BACKUP_BASE_DIR" ]; then
+      echo
       set -ex
       mkdir -v $BACKUP_BASE_DIR
       chown $PGUID:$PGGID $BACKUP_BASE_DIR
       { set +ex; } 2>/dev/null
+      echo
     fi
   fi
 
