@@ -31,7 +31,7 @@ s=0
 : ${A:=${SN%.sh}}
 : ${APN:=$(echo $A|cut -d- -f2)}
 : ${API:=$(echo $A|cut -d- -f3-)}
-: ${BDIR:="/usr/local/backup/bin/alias-backup"}
+: ${LDIR:="/usr/local/backup/bin/alias-backup"}
 : ${COMM:=$(readlink -f ${BASH_SOURCE})}
 
 if [ $# -eq 0 ]; then
@@ -265,8 +265,8 @@ if [ $LINK -ne 0 ]; then
     echo $ID: directory not found: $EDIR
     exit 1
   fi
-  if [ ! -d $BDIR ]; then
-    echo $ID: directory not found: $BDIR
+  if [ ! -d $LDIR ]; then
+    echo $ID: directory not found: $LDIR
     exit 1
   fi
 
@@ -278,16 +278,16 @@ if [ $LINK -ne 0 ]; then
 
     LSRC=$COMM
 
-    if [ ! -f $BDIR/$E ]; then
+    if [ ! -f $LDIR/$E ]; then
       if [ $EVAL -ne 0 ]; then
         set -ex
-        ln -svr $LSRC $BDIR/$E
+        ln -svr $LSRC $LDIR/$E
         { set +ex; } 2>/dev/null
       else
-        echo "ln -svr $LSRC $BDIR/$E"
+        echo "ln -svr $LSRC $LDIR/$E"
       fi
     else
-      echo "# ln -svr $LSRC $BDIR/$E"
+      echo "# ln -svr $LSRC $LDIR/$E"
     fi
   done
 fi
