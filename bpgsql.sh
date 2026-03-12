@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="202503060061"
+VERSION_BIN="202603130061"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -304,6 +304,11 @@ if [ $BACKUP_ONLINE -ne 0 ]; then
     exit 1
   fi
 
+  if [ -z "$(type -p pg_basebackup)" ]; then
+    echo "$ID: error: command not found: pg_basebackup"
+    exit 1
+  fi
+
   if [ $PERM -eq 0 ]; then
     D=$ADIR
   else
@@ -357,6 +362,11 @@ if [ $BACKUP_BASE -ne 0 ]; then
 
   if [ "$A" = "bpgsql" ]; then
     echo "$ID: error: require app"
+    exit 1
+  fi
+
+  if [ -z "$(type -p pg_basebackup)"]; then
+    echo "$ID: error: command not found: pg_basebackup"
     exit 1
   fi
 
