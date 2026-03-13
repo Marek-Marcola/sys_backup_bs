@@ -95,8 +95,8 @@ while [ $# -gt 0 ]; do
       shift
       ;;
     -s*)
-      [[ "$1" != "-s" ]] && ESHOW_RE=${1:2}
       ESHOW=1
+      ESHOW_RE="$2"
       QUIET=1
       shift
       ;;
@@ -144,7 +144,7 @@ if [ $HELP -eq 1 ]; then
   echo "$SN -L [-x]       # link show,run"
   echo ""
   echo "$SN -ls           # env list"
-  echo "$SN -s[re]        # env show"
+  echo "$SN -s [re]       # env show"
   echo "$SN -E            # env edit"
   echo ""
   echo "$SN -B [-p] [-x]  # online_backup,permanent,exec"
