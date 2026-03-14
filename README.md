@@ -3,7 +3,7 @@ backup scripts
 
 Backup scripts.
 
-Deployment models: fs, sync, pgsql
+Deployment models: fs, sync, pgsql, net(mikrotik,hpsw)
 
 Install
 -------
@@ -14,8 +14,9 @@ Install:
     cp -fv bfs.sh /usr/local/backup/bin
     cp -fv bsync.sh /usr/local/backup/bin
     cp -fv bpgsql.sh /usr/local/backup/bin
+    cp -fv bnet.sh /usr/local/backup/bin
 
-    mkdir -pv /usr/local/backup/etc/{bfs.d,bsync.d,bpgsql.d}
+    mkdir -pv /usr/local/backup/etc/{bfs.d,bsync.d,bpgsql.d,bnet.d}
     mkdir -pv /usr/local/backup/bin/alias-backup
 
 Postinstall:
