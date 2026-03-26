@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="202603140061"
+VERSION_BIN="202603260061"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -319,9 +319,9 @@ if [ $GIT -ne 0 ]; then
   { set +ex; } 2>/dev/null
 
   if ! git diff --staged --quiet; then
-    D=$(date +%Y%m%d%H%M)
+    C=b$(date +%y%m%d%H%M)
     set -ex
-    git commit -m $D
+    git commit -m $C
     git remote -v | grep push | cut -f1 | xargs -L1 -tr git push
     { set +ex; } 2>/dev/null
   fi
