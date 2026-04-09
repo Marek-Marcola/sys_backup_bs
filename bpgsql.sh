@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="202603130061"
+VERSION_BIN="260409"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -328,7 +328,7 @@ if [ $BACKUP_ONLINE -ne 0 ]; then
   echo online backup start: $(date "+%Y-%m-%d %H:%M:%S")
   T1=$(date +%s)
 
-  TDIR=$PGCL-$(date "+%Y%m%d%H%M")
+  TDIR=$PGCL-$(date "+%y%m%d%H%M")
 
   if [ $EVAL -ne 0 ]; then
     (
