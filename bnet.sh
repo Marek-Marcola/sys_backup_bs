@@ -1,11 +1,13 @@
 #!/bin/bash
 
-VERSION_BIN="260409"
+VERSION_BIN="260418"
 
 SN="${0##*/}"
 ID="[$SN]"
 
-INSTALL=0
+INSTALL_RSYNC=0
+INSTALL_ANPB=0
+INSTALL_ANPB_HP="bs"
 VERSION=0
 LINK=0
 BACKUP_MIKROTIK=0
@@ -29,12 +31,17 @@ s=0
 
 while [ $# -gt 0 ]; do
   case $1 in
-    --inst*|-inst*)
-      INSTALL=1
-      shift
-      ;;
     --vers*|-vers*)
       VERSION=1
+      shift
+      ;;
+    --inst*|-inst*)
+      INSTALL_RSYNC=1
+      shift
+      ;;
+    --anpb|-anpb)
+      INSTALL_ANPB=1
+      [[ -n "$2" && ${2:0:1} != "-" ]] && INSTALL_ANPB_HP="$2" && shift
       shift
       ;;
     -A)
@@ -106,18 +113,19 @@ while [ $# -gt 0 ]; do
 done
 
 if [ $HELP -eq 1 ]; then
-  echo "$SN -install     # install"
-  echo "$SN -version     # version"
+  echo "$SN -version                  # version"
+  echo "$SN -install                  # install with rsync"
+  echo "$SN -anpb [host_pattern] [-x] # install with ansible"
   echo ""
-  echo "$SN -L [-x]      # link show,run"
+  echo "$SN -L [-x]                   # link show,run"
   echo ""
-  echo "$SN -s [re]      # env show"
-  echo "$SN -E           # env edit"
+  echo "$SN -s [re]                   # env show"
+  echo "$SN -E                        # env edit"
   echo ""
-  echo "$SN -Bm [-x]     # backup mikrotik,exec"
-  echo "$SN -Bh [-x]     # backup hpsw,exec"
-  echo "$SN -G  [-x]     # git commit/push,exec"
-  echo "$SN              # info"
+  echo "$SN -Bm [-x]                  # backup mikrotik,exec"
+  echo "$SN -Bh [-x]                  # backup hpsw,exec"
+  echo "$SN -G  [-x]                  # git commit/push,exec"
+  echo "$SN                           # info"
   echo ""
   echo "aliases:"
   echo "  -bmg = -Bm -G -x"
@@ -152,9 +160,12 @@ if [ $VERSION -eq 1 ]; then
 fi
 
 #
-# stage: INSTALL
+# stage: INSTALL-RSYNC
 #
-if [ $INSTALL -eq 1 ]; then
+if [ $INSTALL_RSYNC -eq 1 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: INSTALL-RSYNC"
+
   for d in /usr/local/backup/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
     if [ -d $d ]; then
       for f in bfs.sh bsync.sh bpgsql.sh bnet.sh; do
@@ -166,6 +177,32 @@ if [ $INSTALL -eq 1 ]; then
       done
     fi
   done
+
+  exit 0
+fi
+
+#
+# stage: INSTALL-ANPB
+#
+if [ $INSTALL_ANPB -eq 1 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: INSTALL-ANPB (EVAL=$EVAL)"
+
+  if [ ! $(type -t anpb) ]; then
+    echo "$ID: error: command not found: anpb"
+    exit 1
+  fi
+
+  if [ $EVAL -eq 0 ]; then
+    set -ex
+    anpb bs_install.yml -e h=$INSTALL_ANPB_HP --check --diff
+    { set +ex; } 2>/dev/null
+  else
+    set -ex
+    anpb bs_install.yml -e h=$INSTALL_ANPB_HP
+    { set +ex; } 2>/dev/null
+  fi
+
   exit 0
 fi
 
