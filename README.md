@@ -11,18 +11,18 @@ Install:
 
     ./bfs.sh --install
     -- or --
-    cp -fv bfs.sh /usr/local/backup/bin
-    cp -fv bsync.sh /usr/local/backup/bin
-    cp -fv bpgsql.sh /usr/local/backup/bin
-    cp -fv bnet.sh /usr/local/backup/bin
+    cp -fv bfs.sh /usr/local/bin
+    cp -fv bsync.sh /usr/local/bin
+    cp -fv bpgsql.sh /usr/local/bin
+    cp -fv bnet.sh /usr/local/bin
 
-    mkdir -pv /usr/local/backup/etc/{bfs.d,bsync.d,bpgsql.d,bnet.d}
-    mkdir -pv /usr/local/backup/bin/alias-backup
+    mkdir -pv /usr/local/etc/{bfs.d,bsync.d,bpgsql.d,bnet.d}
+    mkdir -pv /usr/local/bin/alias-backup
 
 Postinstall:
 
     # cat > /etc/profile.d/zlocal-backup.sh <<\EOF
-    export PATH=/usr/local/backup/bin:/usr/local/backup/bin/alias-backup:$PATH
+    export PATH=/usr/local/bin/alias-backup:$PATH
     EOF
 
 Verify:
