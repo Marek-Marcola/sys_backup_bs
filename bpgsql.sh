@@ -1,25 +1,26 @@
 #!/bin/bash
 
-VERSION_BIN="260409"
+VERSION_BIN="260614"
 
 SN="${0##*/}"
 ID="[$SN]"
 
 INSTALL=0
 VERSION=0
+STAGE_LIST=0
 LINK=0
 BACKUP_ONLINE=0
 BACKUP_ONLINE_LIST=0
 BACKUP_BASE=0
 BACKUP_BASE_DIR=""
 ROTATE=0
-EVAL=0
 PERM=0
 SYNC=0
 ELIST=0
 ESHOW=0
 ESHOW_RE=""
 EEDIT=0
+EVAL=0
 HELP=0
 VERB=0
 QUIET=0
@@ -31,7 +32,7 @@ s=0
 : ${A:=${SN%.sh}}
 : ${APN:=$(echo $A|cut -d- -f2)}
 : ${API:=$(echo $A|cut -d- -f3-)}
-: ${LDIR:="/usr/local/backup/bin/alias-backup"}
+: ${LDIR:="/usr/local/bin/alias-backup"}
 : ${COMM:=$(readlink -f ${BASH_SOURCE})}
 
 if [ $# -eq 0 ]; then
@@ -43,12 +44,16 @@ fi
 
 while [ $# -gt 0 ]; do
   case $1 in
+    --vers*|-vers*)
+      VERSION=1
+      shift
+      ;;
     --inst*|-inst*)
       INSTALL=1
       shift
       ;;
-    --vers*|-vers*)
-      VERSION=1
+    --stage|-stage)
+      STAGE_LIST=1
       shift
       ;;
     -A)
@@ -137,9 +142,13 @@ while [ $# -gt 0 ]; do
   esac
 done
 
+#
+# stage: HELP
+#
 if [ $HELP -eq 1 ]; then
   echo "$SN -install      # install"
   echo "$SN -version      # version"
+  echo "$SN -stage        # stage list"
   echo ""
   echo "$SN -L [-x]       # link show,run"
   echo ""
@@ -167,8 +176,8 @@ if [ $HELP -eq 1 ]; then
   echo "  \$BVDIR - base vault name"
   echo ""
   echo "crontab:"
-  echo "  15 23 * * * /usr/local/backup/bin/bpgsql.sh -A bs-apn-api -b    >> /var/log/local/backup/bs-apn-api.log 2>&1"
-  echo "  15 23 * * * /usr/local/backup/bin/bpgsql.sh -A bs-apn-api -b -S >> /var/log/local/backup/bs-apn-api.log 2>&1"
+  echo "  15 23 * * * /usr/local/bin/bpgsql.sh -A bs-apn-api -b    >> /var/log/local/backup/bs-apn-api.log 2>&1"
+  echo "  15 23 * * * /usr/local/bin/bpgsql.sh -A bs-apn-api -b -S >> /var/log/local/backup/bs-apn-api.log 2>&1"
   exit 0
 fi
 
@@ -177,7 +186,7 @@ fi
 #
 : ${BADIR=/var/opt/backup/bpgsql}
 : ${BVDIR=/var/opt/bvault/bpgsql}
-: ${EDIR=/usr/local/backup/etc/bpgsql.d}
+: ${EDIR=/usr/local/etc/bpgsql.d}
 
 if [ -f $(dirname $EDIR)/bpgsql.env ]; then
   . $(dirname $EDIR)/bpgsql.env
@@ -215,7 +224,7 @@ fi
 # stage: INSTALL
 #
 if [ $INSTALL -eq 1 ]; then
-  for d in /usr/local/backup/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
+  for d in /usr/local/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
     if [ -d $d ]; then
       for f in bsw.sh bfs.sh bsync.sh bpgsql.sh; do
         if [ -f $f ]; then
@@ -226,6 +235,14 @@ if [ $INSTALL -eq 1 ]; then
       done
     fi
   done
+  exit 0
+fi
+
+#
+# stage: STAGE-LIST
+#
+if [ $STAGE_LIST -eq 1 ]; then
+  cat $COMM | grep '^#' | grep 'stage:'
   exit 0
 fi
 
