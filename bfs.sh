@@ -24,6 +24,8 @@ QUIET=0
 
 s=0
 
+: ${COMM:=$(readlink -f ${BASH_SOURCE})}
+
 while [ $# -gt 0 ]; do
   case $1 in
     --vers*|-vers*)
@@ -234,6 +236,14 @@ if [ $INSTALL_ANPB -eq 1 ]; then
   anpb bs_install.yml -e h=$INSTALL_ANPB_HP $EVAL_OPT
   { set +ex; } 2>/dev/null
 
+  exit 0
+fi
+
+#
+# stage: STAGE-LIST
+#
+if [ $STAGE_LIST -eq 1 ]; then
+  cat $COMM | grep '^#' | grep 'stage:'
   exit 0
 fi
 
