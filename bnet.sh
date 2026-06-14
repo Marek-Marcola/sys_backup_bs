@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260418"
+VERSION_BIN="260614"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -9,6 +9,7 @@ INSTALL_RSYNC=0
 INSTALL_ANPB=0
 INSTALL_ANPB_HP="bs"
 VERSION=0
+STAGE_LIST=0
 LINK=0
 BACKUP_MIKROTIK=0
 BACKUP_HPSW=0
@@ -26,7 +27,7 @@ s=0
 : ${A:=${SN%.sh}}
 : ${APN:=$(echo $A|cut -d- -f2)}
 : ${API:=$(echo $A|cut -d- -f3-)}
-: ${LDIR:="/usr/local/backup/bin/alias-backup"}
+: ${LDIR:="/usr/local/bin/alias-backup"}
 : ${COMM:=$(readlink -f ${BASH_SOURCE})}
 
 while [ $# -gt 0 ]; do
@@ -42,6 +43,10 @@ while [ $# -gt 0 ]; do
     --anpb|-anpb)
       INSTALL_ANPB=1
       [[ -n "$2" && ${2:0:1} != "-" ]] && INSTALL_ANPB_HP="$2" && shift
+      shift
+      ;;
+    --stage|-stage)
+      STAGE_LIST=1
       shift
       ;;
     -A)
@@ -116,6 +121,7 @@ if [ $HELP -eq 1 ]; then
   echo "$SN -version                  # version"
   echo "$SN -install                  # install with rsync"
   echo "$SN -anpb [host_pattern] [-x] # install with ansible"
+  echo "$SN -stage                    # stage list"
   echo ""
   echo "$SN -L [-x]                   # link show,run"
   echo ""
@@ -136,7 +142,7 @@ fi
 #
 # stage: CONFIG
 #
-: ${EDIR=/usr/local/backup/etc/bnet.d}
+: ${EDIR=/usr/local/etc/bnet.d}
 
 if [ -f $(dirname $EDIR)/bnet.env ]; then
   . $(dirname $EDIR)/bsw.env
@@ -166,7 +172,7 @@ if [ $INSTALL_RSYNC -eq 1 ]; then
   (( $s != 0 )) && echo; ((++s))
   echo "$ID: stage: INSTALL-RSYNC"
 
-  for d in /usr/local/backup/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
+  for d in /usr/local/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
     if [ -d $d ]; then
       for f in bfs.sh bsync.sh bpgsql.sh bnet.sh; do
         if [ -f $f ]; then
@@ -193,16 +199,20 @@ if [ $INSTALL_ANPB -eq 1 ]; then
     exit 1
   fi
 
-  if [ $EVAL -eq 0 ]; then
-    set -ex
-    anpb bs_install.yml -e h=$INSTALL_ANPB_HP --check --diff
-    { set +ex; } 2>/dev/null
-  else
-    set -ex
-    anpb bs_install.yml -e h=$INSTALL_ANPB_HP
-    { set +ex; } 2>/dev/null
-  fi
+  [[ $EVAL -ne 1 ]] && EVAL_OPT="--check --diff" || EVAL_OPT=""
 
+  set -ex
+  anpb bs_install.yml -e h=$INSTALL_ANPB_HP $EVAL_OPT
+  { set +ex; } 2>/dev/null
+
+  exit 0
+fi
+
+#
+# stage: STAGE-LIST
+#
+if [ $STAGE_LIST -eq 1 ]; then
+  cat $COMM | grep '^#' | grep 'stage:'
   exit 0
 fi
 
