@@ -147,20 +147,6 @@ fi
 : ${EDIR=/usr/local/etc/bfs.d}
 : ${BID=$(hostname -s)}
 
-if [ -f $(dirname $EDIR)/bfs.env ]; then
-  . $(dirname $EDIR)/bfs.env
-  EFILE=$(dirname $EDIR)/bfs.env
-fi
-
-if [ -f $EDIR/$BID ]; then
-  . $EDIR/$BID
-  EFILE="$EFILE $EDIR/$BID"
-fi
-
-if [ "$ETAG" != "" ]; then
-  BOPT="$BOPT --exclude-tag-under=$ETAG"
-fi
-
 : ${BADIR=/var/backup/bfs}
 : ${BVDIR=/var/bvault/bfs}
 : ${ADIR=$BADIR/$BID}
@@ -174,6 +160,20 @@ fi
 : ${PATT="bfs-*.tar.gz"}
 : ${BDIR="etc root usr/local/{bin,etc} opt/local/{bin,etc}"}
 : ${WDIR=/}
+
+if [ -f $(dirname $EDIR)/bfs.env ]; then
+  . $(dirname $EDIR)/bfs.env
+  EFILE=$(dirname $EDIR)/bfs.env
+fi
+
+if [ -f $EDIR/$BID ]; then
+  . $EDIR/$BID
+  EFILE="$EFILE $EDIR/$BID"
+fi
+
+if [ "$ETAG" != "" ]; then
+  BOPT="$BOPT --exclude-tag-under=$ETAG"
+fi
 
 #
 # stage: VERSION
