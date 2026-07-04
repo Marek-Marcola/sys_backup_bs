@@ -17,12 +17,12 @@ Install:
     cp -fv bnet.sh   /usr/local/bin
 
     mkdir -pv /usr/local/etc/{bfs.d,bsync.d,bpgsql.d,bnet.d}
-    mkdir -pv /usr/local/bin/alias-backup
+    mkdir -pv /usr/local/bin/alias-bs
 
 Postinstall:
 
     # cat > /etc/profile.d/zlocal-backup.sh <<\EOF
-    export PATH=/usr/local/bin/alias-backup:$PATH
+    export PATH=/usr/local/bin/alias-bs:$PATH
     EOF
 
 Verify:
