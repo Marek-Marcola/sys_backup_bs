@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260614"
+VERSION_BIN="260705"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -32,7 +32,7 @@ s=0
 : ${A:=${SN%.sh}}
 : ${APN:=$(echo $A|cut -d- -f2)}
 : ${API:=$(echo $A|cut -d- -f3-)}
-: ${LDIR:="/usr/local/bin/alias-backup"}
+: ${LDIR:="/usr/local/bin/alias-bs"}
 : ${COMM:=$(readlink -f ${BASH_SOURCE})}
 
 if [ $# -eq 0 ]; then
