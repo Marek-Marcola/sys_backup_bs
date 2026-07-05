@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260614"
+VERSION_BIN="260705"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -28,7 +28,7 @@ s=0
 
 while [ $# -gt 0 ]; do
   case $1 in
-    --vers*|-vers*)
+    --ver*|-ver*)
       VERSION=1
       shift
       ;;
@@ -118,18 +118,18 @@ done
 # stage: HELP
 #
 if [ $HELP -eq 1 ]; then
-  echo "$SN -version                    # version"
-  echo "$SN -install                    # install"
-  echo "$SN -anpb [host_pattern] [-x]   # install with ansible"
-  echo "$SN -stage                      # stage list"
+  echo "$SN -ver                      # version"
+  echo "$SN -inst [-x]                # install with rsync"
+  echo "$SN -anpb [host_pattern] [-x] # install with ansible"
+  echo "$SN -stage                    # stage list"
   echo ""
-  echo "$SN -l                          # list backup"
-  echo "$SN -ls                         # list system"
-  echo "$SN -s                          # backup size"
-  echo "$SN -B [-x] [-v] [-p]           # backup,exec,verbose,permanent"
-  echo "$SN -R [-x]                     # rotate,exec"
-  echo "$SN -S [-x]                     # sync,exec"
-  echo "$SN                             # info"
+  echo "$SN -l                        # list backup"
+  echo "$SN -ls                       # list system"
+  echo "$SN -s                        # backup size"
+  echo "$SN -B [-x] [-v] [-p]         # backup,exec,verbose,permanent"
+  echo "$SN -R [-x]                   # rotate,exec"
+  echo "$SN -S [-x]                   # sync,exec"
+  echo "$SN                           # info"
   echo ""
   echo "aliases:"
   echo "  -b  = -B -s -R -x -l"
@@ -191,30 +191,28 @@ if [ $INSTALL_RSYNC -eq 1 ]; then
   (( $s != 0 )) && echo; ((++s))
   echo "$ID: stage: INSTALL-RSYNC"
 
-  for d in /usr/local/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
-    if [ -d $d ]; then
-      if [ -f bfs.sh ]; then
+  [[ $EVAL -ne 1 ]] && EVAL_OPT="-n" || EVAL_OPT=""
+
+  if [ -f bfs.sh ]; then
+    for d in /usr/local/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
+      if [ -d $d ]; then
         set -ex
-        rsync -ai bfs.sh $d/bfs.sh
+        rsync -ai $EVAL_OPT bfs.sh    $d/bfs.sh
+        rsync -ai $EVAL_OPT bsync.sh  $d/bsync.sh
+        rsync -ai $EVAL_OPT bnet.sh   $d/bnet.sh
+        rsync -ai $EVAL_OPT bpgsql.sh $d/bpgsql.sh
         { set +ex; } 2>/dev/null
       fi
-      if [ -f bsync.sh ]; then
-        set -ex
-        rsync -ai bsync.sh $d/bsync.sh
-        { set +ex; } 2>/dev/null
-      fi
-      if [ -f bnet.sh ]; then
-        set -ex
-        rsync -ai bnet.sh $d/bnet.sh
-        { set +ex; } 2>/dev/null
-      fi
-      if [ -f bpgsql.sh ]; then
-        set -ex
-        rsync -ai bpgsql.sh $d/bpgsql.sh
-        { set +ex; } 2>/dev/null
-      fi
-    fi
-  done
+    done
+  else
+    set -ex
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bfs.sh    /usr/local/bin/
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bsync.sh  /usr/local/bin/
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bnet.sh   /usr/local/bin/
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bpgsql.sh /usr/local/bin/
+    { set +ex; } 2>/dev/null
+  fi
+
   exit 0
 fi
 
