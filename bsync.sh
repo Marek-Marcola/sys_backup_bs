@@ -114,6 +114,59 @@ if [ $VERSION -eq 1 ]; then
 fi
 
 #
+# stage: INSTALL-RSYNC
+#
+if [ $INSTALL_RSYNC -eq 1 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: INSTALL-RSYNC"
+
+  [[ $EVAL -ne 1 ]] && EVAL_OPT="-n" || EVAL_OPT=""
+
+  if [ -f bfs.sh ]; then
+    for d in /usr/local/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
+      if [ -d $d ]; then
+        set -ex
+        rsync -ai $EVAL_OPT bfs.sh    $d/bfs.sh
+        rsync -ai $EVAL_OPT bsync.sh  $d/bsync.sh
+        rsync -ai $EVAL_OPT bnet.sh   $d/bnet.sh
+        rsync -ai $EVAL_OPT bpgsql.sh $d/bpgsql.sh
+        { set +ex; } 2>/dev/null
+      fi
+    done
+  else
+    set -ex
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bfs.sh    /usr/local/bin/
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bsync.sh  /usr/local/bin/
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bnet.sh   /usr/local/bin/
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bpgsql.sh /usr/local/bin/
+    { set +ex; } 2>/dev/null
+  fi
+
+  exit 0
+fi
+
+#
+# stage: INSTALL-ANPB
+#
+if [ $INSTALL_ANPB -eq 1 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: INSTALL-ANPB (EVAL=$EVAL)"
+
+  if [ ! $(type -t anpb) ]; then
+    echo "$ID: error: command not found: anpb"
+    exit 1
+  fi
+
+  [[ $EVAL -ne 1 ]] && EVAL_OPT="--check --diff" || EVAL_OPT=""
+
+  set -ex
+  anpb bs_install.yml -e h=$INSTALL_ANPB_HP $EVAL_OPT
+  { set +ex; } 2>/dev/null
+
+  exit 0
+fi
+
+#
 # stage: STAGE-LIST
 #
 if [ $STAGE_LIST -eq 1 ]; then
