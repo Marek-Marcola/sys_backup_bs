@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260705"
+VERSION_BIN="260706"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -11,6 +11,7 @@ INSTALL_ANPB_HP="bs"
 VERSION=0
 STAGE_LIST=0
 LINK=0
+BACKUP=0
 EVAL=0
 HELP=0
 QUIET=0
@@ -51,6 +52,10 @@ while [ $# -gt 0 ]; do
       ;;
     -L)
       LINK=1
+      shift
+      ;;
+    -B)
+      BACKUP=1
       shift
       ;;
     -x)
@@ -133,7 +138,7 @@ if [ $INSTALL_RSYNC -eq 1 ]; then
         { set +ex; } 2>/dev/null
       fi
     done
-  else
+  elif [ -f /pub/pkb/pb/playbooks/001010-backup/files/bfs.sh ]; then
     set -ex
     rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bfs.sh    /usr/local/bin/
     rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bsync.sh  /usr/local/bin/
@@ -224,4 +229,13 @@ if [ $LINK -ne 0 ]; then
       echo "# ln -svr $LSRC $LDIR/$E"
     fi
   done
+fi
+
+#
+# stage: BACKUP
+#
+if [ $BACKUP -ne 0 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: BACKUP (EVAL=$EVAL)"
+
 fi
