@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260705"
+VERSION_BIN="260706"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -204,7 +204,7 @@ if [ $INSTALL_RSYNC -eq 1 ]; then
         { set +ex; } 2>/dev/null
       fi
     done
-  else
+  elif [ -f /pub/pkb/pb/playbooks/001010-backup/files/bfs.sh ]; then
     set -ex
     rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bfs.sh    /usr/local/bin/
     rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bsync.sh  /usr/local/bin/
