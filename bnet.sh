@@ -32,7 +32,7 @@ s=0
 
 while [ $# -gt 0 ]; do
   case $1 in
-    --vers*|-vers*)
+    --ver*|-ver*)
       VERSION=1
       shift
       ;;
@@ -118,8 +118,8 @@ while [ $# -gt 0 ]; do
 done
 
 if [ $HELP -eq 1 ]; then
-  echo "$SN -version                  # version"
-  echo "$SN -install                  # install with rsync"
+  echo "$SN -ver                      # version"
+  echo "$SN -inst [-x]                # install with rsync"
   echo "$SN -anpb [host_pattern] [-x] # install with ansible"
   echo "$SN -stage                    # stage list"
   echo ""
@@ -172,17 +172,27 @@ if [ $INSTALL_RSYNC -eq 1 ]; then
   (( $s != 0 )) && echo; ((++s))
   echo "$ID: stage: INSTALL-RSYNC"
 
-  for d in /usr/local/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
-    if [ -d $d ]; then
-      for f in bfs.sh bsync.sh bpgsql.sh bnet.sh; do
-        if [ -f $f ]; then
-          set -ex
-          rsync -ai $f $d/$f
-          { set +ex; } 2>/dev/null
-        fi
-      done
-    fi
-  done
+  [[ $EVAL -ne 1 ]] && EVAL_OPT="-n" || EVAL_OPT=""
+
+  if [ -f bfs.sh ]; then
+    for d in /usr/local/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
+      if [ -d $d ]; then
+        set -ex
+        rsync -ai $EVAL_OPT bfs.sh    $d/bfs.sh
+        rsync -ai $EVAL_OPT bsync.sh  $d/bsync.sh
+        rsync -ai $EVAL_OPT bnet.sh   $d/bnet.sh
+        rsync -ai $EVAL_OPT bpgsql.sh $d/bpgsql.sh
+        { set +ex; } 2>/dev/null
+      fi
+    done
+  else
+    set -ex
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bfs.sh    /usr/local/bin/
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bsync.sh  /usr/local/bin/
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bnet.sh   /usr/local/bin/
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bpgsql.sh /usr/local/bin/
+    { set +ex; } 2>/dev/null
+  fi
 
   exit 0
 fi
