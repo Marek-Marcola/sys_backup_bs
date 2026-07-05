@@ -5,7 +5,9 @@ VERSION_BIN="260705"
 SN="${0##*/}"
 ID="[$SN]"
 
-INSTALL=0
+INSTALL_RSYNC=0
+INSTALL_ANPB=0
+INSTALL_ANPB_HP="bs"
 VERSION=0
 STAGE_LIST=0
 LINK=0
@@ -44,12 +46,17 @@ fi
 
 while [ $# -gt 0 ]; do
   case $1 in
-    --vers*|-vers*)
+    --ver*|-ver*)
       VERSION=1
       shift
       ;;
     --inst*|-inst*)
-      INSTALL=1
+      INSTALL_RSYNC=1
+      shift
+      ;;
+    --anpb|-anpb)
+      INSTALL_ANPB=1
+      [[ -n "$2" && ${2:0:1} != "-" ]] && INSTALL_ANPB_HP="$2" && shift
       shift
       ;;
     --stage|-stage)
@@ -146,23 +153,24 @@ done
 # stage: HELP
 #
 if [ $HELP -eq 1 ]; then
-  echo "$SN -install      # install"
-  echo "$SN -version      # version"
-  echo "$SN -stage        # stage list"
+  echo "$SN -ver                      # version"
+  echo "$SN -inst [-x]                # install with rsync"
+  echo "$SN -anpb [host_pattern] [-x] # install with ansible"
+  echo "$SN -stage                    # stage list"
   echo ""
-  echo "$SN -L [-x]       # link show,run"
+  echo "$SN -L [-x]                   # link show,run"
   echo ""
-  echo "$SN -ls           # env list"
-  echo "$SN -s [re]       # env show"
-  echo "$SN -E            # env edit"
+  echo "$SN -ls                       # env list"
+  echo "$SN -s [re]                   # env show"
+  echo "$SN -E                        # env edit"
   echo ""
-  echo "$SN -B [-p] [-x]  # online_backup,permanent,exec"
-  echo "$SN -bb dir [-x]  # base_backup with replication_setup,exec"
+  echo "$SN -B [-p] [-x]              # online_backup,permanent,exec"
+  echo "$SN -bb dir [-x]              # base_backup with replication_setup,exec"
   echo ""
-  echo "$SN -R [-x]       # rotate_backup,exec"
-  echo "$SN -S [-x]       # sync_backup,exec"
-  echo "$SN -l            # list backup"
-  echo "$SN               # info"
+  echo "$SN -R [-x]                   # rotate_backup,exec"
+  echo "$SN -S [-x]                   # sync_backup,exec"
+  echo "$SN -l                        # list backup"
+  echo "$SN                           # info"
   echo ""
   echo "opts:"
   echo "  -A  - backup specification"
@@ -221,20 +229,55 @@ if [ $VERSION -eq 1 ]; then
 fi
 
 #
-# stage: INSTALL
+# stage: INSTALL-RSYNC
 #
-if [ $INSTALL -eq 1 ]; then
-  for d in /usr/local/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
-    if [ -d $d ]; then
-      for f in bsw.sh bfs.sh bsync.sh bpgsql.sh; do
-        if [ -f $f ]; then
-          set -ex
-          rsync -ai $f $d/$f
-          { set +ex; } 2>/dev/null
-        fi
-      done
-    fi
-  done
+if [ $INSTALL_RSYNC -eq 1 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: INSTALL-RSYNC"
+
+  [[ $EVAL -ne 1 ]] && EVAL_OPT="-n" || EVAL_OPT=""
+
+  if [ -f bfs.sh ]; then
+    for d in /usr/local/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
+      if [ -d $d ]; then
+        set -ex
+        rsync -ai $EVAL_OPT bfs.sh    $d/bfs.sh
+        rsync -ai $EVAL_OPT bsync.sh  $d/bsync.sh
+        rsync -ai $EVAL_OPT bnet.sh   $d/bnet.sh
+        rsync -ai $EVAL_OPT bpgsql.sh $d/bpgsql.sh
+        { set +ex; } 2>/dev/null
+      fi
+    done
+  else
+    set -ex
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bfs.sh    /usr/local/bin/
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bsync.sh  /usr/local/bin/
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bnet.sh   /usr/local/bin/
+    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bpgsql.sh /usr/local/bin/
+    { set +ex; } 2>/dev/null
+  fi
+
+  exit 0
+fi
+
+#
+# stage: INSTALL-ANPB
+#
+if [ $INSTALL_ANPB -eq 1 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: INSTALL-ANPB (EVAL=$EVAL)"
+
+  if [ ! $(type -t anpb) ]; then
+    echo "$ID: error: command not found: anpb"
+    exit 1
+  fi
+
+  [[ $EVAL -ne 1 ]] && EVAL_OPT="--check --diff" || EVAL_OPT=""
+
+  set -ex
+  anpb bs_install.yml -e h=$INSTALL_ANPB_HP $EVAL_OPT
+  { set +ex; } 2>/dev/null
+
   exit 0
 fi
 
