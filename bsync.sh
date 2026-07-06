@@ -104,9 +104,15 @@ fi
 : ${EDIR=/usr/local/etc/bsync.d}
 : ${BID=$(hostname -s)}
 
-if [ -f $(dirname $EDIR)/bsync.env ]; then
-  . $(dirname $EDIR)/bsync.env
-  EFILE=$(dirname $EDIR)/bsync.env
+for f in $(dirname $EDIR)/bsync.env $EDIR/$A; do
+  if [ -e $f ]; then
+    [[ "$EFILE" != "" ]] && EFILE="$EFILE $f" || EFILE="$f"
+    . $f
+  fi
+done
+
+if [ -z "$OPTS" ]; then
+  OPTS=( "-azx" "-W" "-i" )
 fi
 
 #
@@ -191,6 +197,17 @@ if [ $QUIET -eq 0 ]; then
   echo "APN    = ${APN:-[none]}"
   echo "API    = ${API:-[none]}"
   echo "ldir   = $LDIR"
+  echo "OPTS   = "${OPTS[@]}""
+  echo -n "SYNC   = "
+  if [ -n "$SYNC" ]; then
+  {
+    for i in "${SYNC[@]}"; do
+      echo $i
+    done
+  } | sed '2,$s/^/         /'
+  else
+    echo "[none]"
+  fi
 fi
 
 #
@@ -238,4 +255,15 @@ if [ $BACKUP -ne 0 ]; then
   (( $s != 0 )) && echo; ((++s))
   echo "$ID: stage: BACKUP (EVAL=$EVAL)"
 
+  [[ $EVAL -ne 1 ]] && EVAL_OPT="-n" || EVAL_OPT=""
+
+  for i in "${SYNC[@]}"; do
+    if [ "$i" = "" ]; then
+      continue
+    fi
+    set -ex
+    rsync "${OPTS[@]}" $EVAL_OPT $i 2>&1
+    { set +ex; } 2>/dev/null
+    echo
+  done
 fi
