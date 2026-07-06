@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260706"
+VERSION_BIN="260707"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -90,7 +90,9 @@ if [ $HELP -eq 1 ]; then
   echo "$SN -anpb [host_pattern] [-x] # install with ansible"
   echo "$SN -stage                    # stage list"
   echo ""
-  echo "$SN -L [-x]                   # link show,run"
+  echo "$SN -L [-x]                   # link show,exec"
+  echo ""
+  echo "$SN -B [-x]                   # backup test,exec"
   echo ""
   echo "$SN -l                        # list backup"
   echo "$SN -ls                       # list system"
