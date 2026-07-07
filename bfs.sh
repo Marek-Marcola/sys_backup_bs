@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260706"
+VERSION_BIN="260707"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -80,14 +80,14 @@ while [ $# -gt 0 ]; do
       BACKUP_LIST=1
       SIZE=1
       ROTATE=1
-      EXEC=1
+      EVAL=1
       shift
       ;;
     -bp)
       BACKUP=1
       BACKUP_LIST=1
       SIZE=1
-      EXEC=1
+      EVAL=1
       PERM=1
       shift
       ;;
@@ -147,8 +147,8 @@ fi
 : ${EDIR=/usr/local/etc/bfs.d}
 : ${BID=$(hostname -s)}
 
-: ${BADIR=/var/backup/bfs}
-: ${BVDIR=/var/bvault/bfs}
+: ${BADIR=/var/opt/backup/bfs}
+: ${BVDIR=/var/opt/bvault/bfs}
 : ${ADIR=$BADIR/$BID}
 : ${PDIR=$BADIR/$BID/perm}
 : ${VDIR=$BVDIR/$BID}
@@ -272,7 +272,7 @@ fi
 #
 if [ $BACKUP -ne 0 -o $SIZE -ne 0 ]; then
   (( $s != 0 )) && echo; ((++s))
-  echo "$ID: stage: BACKUP (EXEC=$EXEC,SIZE=$SIZE,PERM=$PERM)"
+  echo "$ID: stage: BACKUP (EVAL=$EVAL,SIZE=$SIZE,PERM=$PERM)"
 
   if [ ! -d $WDIR ]; then
     echo $ID: no working directory: $WDIR
@@ -306,7 +306,7 @@ if [ $BACKUP -ne 0 -o $SIZE -ne 0 ]; then
     du -x -h -s $BDIR | sort -rh | awk '{s=$1; for(i=1; i<NF; i++) $i=$(i+1); NF-=1; printf "%8s %s\n",s,$0}'
   fi
 
-  if [ $BACKUP -ne 0 -a $EXEC -ne 0 ]; then
+  if [ $BACKUP -ne 0 -a $EVAL -ne 0 ]; then
     echo
     echo backup start: $(date "+%Y-%m-%d %H:%M:%S")
     T1=$(date +%s)
@@ -360,7 +360,7 @@ fi
 #
 if [ $ROTATE -ne 0 ]; then
   (( $s != 0 )) && echo; ((++s))
-  echo "$ID: stage: ROTATE (EXEC=$EXEC)"
+  echo "$ID: stage: ROTATE (EVAL=$EVAL)"
 
   echo protect:
   ls -1 $ADIR/$PATT|sort -r|head -$ANUM| \
@@ -375,7 +375,7 @@ if [ $ROTATE -ne 0 ]; then
     echo recycle:
     ls -1 $ADIR/$PATT|sort -r|tail -n +$N1| \
     while read F; do
-      if [ $EXEC -eq 0 ]; then
+      if [ $EVAL -eq 0 ]; then
         ls -lh $F | sed 's/^/  /'
       else
         set -ex
@@ -391,10 +391,10 @@ fi
 #
 if [ $SYNC -ne 0 ]; then
   (( $s != 0 )) && echo; ((++s))
-  echo "$ID: stage: SYNC (EXEC=$EXEC)"
+  echo "$ID: stage: SYNC (EVAL=$EVAL)"
 
 
-  if [ $EXEC -eq 0 ]; then
+  if [ $EVAL -eq 0 ]; then
     SOPT="$SOPT -n"
   fi
 
