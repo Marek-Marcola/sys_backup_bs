@@ -400,12 +400,10 @@ if [ $BACKUP -ne 0 -o $SIZE -ne 0 ]; then
 
     if [ $VERB -eq 0 ]; then
       set -x
-      cd $WDIR
       tar cvf $D/$ARCH $BOPT $EDIR > /dev/null
       { set +x; } 2>/dev/null
     else
       set -x
-      cd $WDIR
       tar cvf $D/$ARCH $BOPT $EDIR
       { set +x; } 2>/dev/null
     fi
