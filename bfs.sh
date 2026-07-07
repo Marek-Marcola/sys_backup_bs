@@ -18,6 +18,9 @@ SIZE=0
 PERM=0
 SYNC=0
 LIST=0
+ESHOW=0
+ESHOW_RE=""
+EEDIT=0
 EVAL=0
 HELP=0
 VERB=0
@@ -54,6 +57,20 @@ while [ $# -gt 0 ]; do
       LINK=1
       shift
       ;;
+    -x)
+      EVAL=1
+      shift
+      ;;
+    -s)
+      ESHOW=1
+      ESHOW_RE="$2"
+      QUIET=1
+      shift
+      ;;
+    -E)
+      EEDIT=1
+      shift
+      ;;
     -B)
       BACKUP=1
       shift
@@ -62,7 +79,7 @@ while [ $# -gt 0 ]; do
       ROTATE=1
       shift
       ;;
-    -s)
+    -z)
       SIZE=1
       shift
       ;;
@@ -100,10 +117,6 @@ while [ $# -gt 0 ]; do
       PERM=1
       shift
       ;;
-    -x)
-      EVAL=1
-      shift
-      ;;
     -h|-help|--help)
       HELP=1
       shift
@@ -134,17 +147,20 @@ if [ $HELP -eq 1 ]; then
   echo ""
   echo "$SN -L [-x]                   # link show,exec"
   echo ""
+  echo "$SN -s [re]                   # env show"
+  echo "$SN -E                        # env edit"
+  echo ""
   echo "$SN -l                        # list backup"
   echo "$SN -ls                       # list system"
-  echo "$SN -s                        # backup size"
+  echo "$SN -z                        # backup size"
   echo "$SN -B [-x] [-v] [-p]         # backup,exec,verbose,permanent"
   echo "$SN -R [-x]                   # rotate,exec"
   echo "$SN -S [-x]                   # sync,exec"
   echo "$SN                           # info"
   echo ""
   echo "aliases:"
-  echo "  -b  = -B -s -R -x -l"
-  echo "  -bp = -B -s -p -x -l"
+  echo "  -b  = -B -z -R -x -l"
+  echo "  -bp = -B -z -p -x -l"
   echo ""
   echo "crontab:"
   echo "  15 23 * * * /usr/local/bin/bfs.sh -b >> /var/log/local/backup/bfs.log 2>&1"
@@ -483,5 +499,54 @@ if [ $LIST -ne 0 ]; then
     set -x
     tree --noreport -F -C /usr/local/backup
     { set +x; } 2>/dev/null
+  fi
+fi
+
+#
+# stage: ENV-SHOW
+#
+if [ $ESHOW -eq 1 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: ENV-SHOW (rexp: *$ESHOW_RE*)"
+
+  if [ "$A" != "bfs" -a  "$ESHOW_RE" = "" ]; then
+    if [ ! -f $EDIR/$A ]; then
+      echo file not found: $EDIR/$A
+    else
+      set -ex
+      cat $EDIR/$A
+      { set +ex; } 2>/dev/null
+    fi
+  else
+    for f in $EDIR/*$ESHOW_RE*; do
+      if [ -f $f ]; then
+        set -ex
+        cat $f  2>&1
+        { set +ex; } 2>/dev/null
+        echo
+      fi
+    done
+  fi
+fi
+
+#
+# stage: ENV-EDIT
+#
+if [ $EEDIT -eq 1 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: ENV-EDIT"
+
+  if [ ! -d $EDIR ]; then
+    echo directory not found: $EDIR
+  else
+    if [ "$EDITOR" != "" ]; then
+      set -ex
+      $EDITOR $EDIR/$A
+      { set +ex; } 2>/dev/null
+    else
+      set -ex
+      vi $EDIR/$A
+      { set +ex; } 2>/dev/null
+    fi
   fi
 fi
