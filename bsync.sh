@@ -120,7 +120,6 @@ fi
 # stage: CONFIG
 #
 : ${EDIR=/usr/local/etc/bsync.d}
-: ${BID=$(hostname -s)}
 
 for f in $(dirname $EDIR)/bsync.env $EDIR/$A; do
   if [ -e $f ]; then
