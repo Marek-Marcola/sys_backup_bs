@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260706"
+VERSION_BIN="260707"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -49,12 +49,13 @@ while [ $# -gt 0 ]; do
       STAGE_LIST=1
       shift
       ;;
-    -A)
-      A="$2"
-      APN=$(echo $A|cut -d- -f2)
-      API=$(echo $A|cut -d- -f3-)
-      ID="[$A]"
-      shift; shift
+    -L)
+      LINK=1
+      shift
+      ;;
+    -x)
+      EVAL=1
+      shift
       ;;
     -s)
       ESHOW=1
@@ -66,6 +67,13 @@ while [ $# -gt 0 ]; do
       EEDIT=1
       shift
       ;;
+    -A)
+      A="$2"
+      APN=$(echo $A|cut -d- -f2)
+      API=$(echo $A|cut -d- -f3-)
+      ID="[$A]"
+      shift; shift
+      ;;
     -Bm)
       BACKUP_MIKROTIK=1
       shift
@@ -76,14 +84,6 @@ while [ $# -gt 0 ]; do
       ;;
     -G)
       GIT=1
-      shift
-      ;;
-    -L)
-      LINK=1
-      shift
-      ;;
-    -x)
-      EVAL=1
       shift
       ;;
     -bmg)
