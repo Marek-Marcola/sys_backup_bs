@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260707"
+VERSION_BIN="260708"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -111,7 +111,6 @@ if [ $HELP -eq 1 ]; then
   echo "$SN -B [-x]                   # backup test,exec"
   echo ""
   echo "$SN -l                        # list backup"
-  echo "$SN -ls                       # list system"
   echo "$SN                           # info"
   exit 0
 fi
