@@ -279,10 +279,10 @@ if [ $QUIET -eq 0 ]; then
   echo "$ID: stage: INFO"
 
   echo "efile =" $EFILE
-  echo "App    = ${A:-[none]}"
-  echo "APN    = ${APN:-[none]}"
-  echo "API    = ${API:-[none]}"
-  echo "ldir   = $LDIR"
+  echo "App   =" ${A:-[none]}
+  echo "APN   =" ${APN:-[none]}
+  echo "API   =" ${API:-[none]}
+  echo "ldir  =" $LDIR
   echo "adir  =" $ADIR
   echo "pdir  =" $PDIR
   echo "vdir  =" $VDIR
