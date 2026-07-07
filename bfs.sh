@@ -10,6 +10,7 @@ INSTALL_ANPB=0
 INSTALL_ANPB_HP="bs"
 VERSION=0
 STAGE_LIST=0
+LINK=0
 BACKUP=0
 BACKUP_LIST=0
 ROTATE=0
@@ -24,6 +25,10 @@ QUIET=0
 
 s=0
 
+: ${A:=${SN%.sh}}
+: ${APN:=$(echo $A|cut -d- -f2)}
+: ${API:=$(echo $A|cut -d- -f3-)}
+: ${LDIR:="/usr/local/bin/alias-bs"}
 : ${COMM:=$(readlink -f ${BASH_SOURCE})}
 
 while [ $# -gt 0 ]; do
@@ -43,6 +48,10 @@ while [ $# -gt 0 ]; do
       ;;
     --stage|-stage)
       STAGE_LIST=1
+      shift
+      ;;
+    -L)
+      LINK=1
       shift
       ;;
     -B)
@@ -123,6 +132,8 @@ if [ $HELP -eq 1 ]; then
   echo "$SN -anpb [host_pattern] [-x] # install with ansible"
   echo "$SN -stage                    # stage list"
   echo ""
+  echo "$SN -L [-x]                   # link show,exec"
+  echo ""
   echo "$SN -l                        # list backup"
   echo "$SN -ls                       # list system"
   echo "$SN -s                        # backup size"
@@ -145,30 +156,29 @@ fi
 # stage: CONFIG
 #
 : ${EDIR=/usr/local/etc/bfs.d}
-: ${BID=$(hostname -s)}
 
-: ${BADIR=/var/opt/backup/bfs}
-: ${BVDIR=/var/opt/bvault/bfs}
-: ${ADIR=$BADIR/$BID}
-: ${PDIR=$BADIR/$BID/perm}
-: ${VDIR=$BVDIR/$BID}
+for f in $(dirname $EDIR)/bfs.env $EDIR/$A; do
+  if [ -e $f ]; then
+    [[ "$EFILE" != "" ]] && EFILE="$EFILE $f" || EFILE="$f"
+    . $f
+  fi
+done
+
+: ${BADIR:=/var/opt/backup/bfs}
+: ${BVDIR:=/var/opt/bvault/bfs}
+: ${ADIR:=$BADIR/$API}
+: ${PDIR:=$BADIR/$API/perm}
+: ${VDIR:=$BVDIR/$API}
 : ${ETAG:=bfs.tag}
-: ${BOPT="--totals"}
-: ${SOPT="-azx -W -i --delete"}
-: ${ANUM=5}
-: ${ARCH=bfs-$BID-$(date "+%y%m%d%H%M").tar}
-: ${PATT="bfs-*.tar.gz"}
-: ${BDIR="etc root usr/local/{bin,etc} opt/local/{bin,etc}"}
-: ${WDIR=/}
+: ${BOPT:="--totals"}
+: ${SOPT:="-azx -W -i --delete"}
+: ${ANUM:=5}
+: ${ARCH:=bfs-$API-$(date "+%y%m%d%H%M").tar}
+: ${PATT:="bfs-*.tar.gz"}
+: ${WDIR:=/}
 
-if [ -f $(dirname $EDIR)/bfs.env ]; then
-  . $(dirname $EDIR)/bfs.env
-  EFILE=$(dirname $EDIR)/bfs.env
-fi
-
-if [ -f $EDIR/$BID ]; then
-  . $EDIR/$BID
-  EFILE="$EFILE $EDIR/$BID"
+if [ -z "$BDIR" ]; then
+  BDIR=()
 fi
 
 if [ "$ETAG" != "" ]; then
@@ -252,8 +262,11 @@ if [ $QUIET -eq 0 ]; then
   (( $s != 0 )) && echo; ((++s))
   echo "$ID: stage: INFO"
 
-  echo "bid   =" $BID
   echo "efile =" $EFILE
+  echo "App    = ${A:-[none]}"
+  echo "APN    = ${APN:-[none]}"
+  echo "API    = ${API:-[none]}"
+  echo "ldir   = $LDIR"
   echo "adir  =" $ADIR
   echo "pdir  =" $PDIR
   echo "vdir  =" $VDIR
@@ -264,7 +277,45 @@ if [ $QUIET -eq 0 ]; then
   echo "arch  =" $ARCH
   echo "patt  =" $PATT
   echo "wdir  =" $WDIR
-  echo "bdir  =" $BDIR
+  echo "bdir  =" ${BDIR[@]}
+fi
+
+#
+# stage: LINK
+#
+if [ $LINK -ne 0 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: LINK"
+
+  if [ ! -d $EDIR ]; then
+    echo $ID: directory not found: $EDIR
+    exit 1
+  fi
+  if [ ! -d $LDIR ]; then
+    echo $ID: directory not found: $LDIR
+    exit 1
+  fi
+
+  ls $EDIR/ | \
+  while read E; do
+    if [ -x $EDIR/$E ]; then
+      continue
+    fi
+
+    LSRC=$COMM
+
+    if [ ! -f $LDIR/$E ]; then
+      if [ $EVAL -ne 0 ]; then
+        set -ex
+        ln -svr $LSRC $LDIR/$E
+        { set +ex; } 2>/dev/null
+      else
+        echo "ln -svr $LSRC $LDIR/$E"
+      fi
+    else
+      echo "# ln -svr $LSRC $LDIR/$E"
+    fi
+  done
 fi
 
 #
@@ -283,9 +334,9 @@ if [ $BACKUP -ne 0 -o $SIZE -ne 0 ]; then
   cd $WDIR
   { set +ex; } 2>/dev/null
 
-  BDIR=$(eval echo $BDIR)
+  EDIR=$(eval echo ${BDIR[@]})
 
-  for d1 in $BDIR; do
+  for d1 in $EDIR; do
     if [ -d $d1 ]; then
       d2=$(readlink -f $d1)
       d2=$(echo $d2 | sed "s|^$WDIR||")
@@ -297,13 +348,13 @@ if [ $BACKUP -ne 0 -o $SIZE -ne 0 ]; then
     fi
   done
 
-  BDIR="$(echo $TDIR)"
+  EDIR="$(echo $TDIR)"
   echo
-  echo "bdir =" $BDIR
+  echo "edir =" $EDIR
 
   if [ $SIZE -ne 0 ]; then
-    echo bdir size:
-    du -x -h -s $BDIR | sort -rh | awk '{s=$1; for(i=1; i<NF; i++) $i=$(i+1); NF-=1; printf "%8s %s\n",s,$0}'
+    echo edir size:
+    du -x -h -s $EDIR | sort -rh | awk '{s=$1; for(i=1; i<NF; i++) $i=$(i+1); NF-=1; printf "%8s %s\n",s,$0}'
   fi
 
   if [ $BACKUP -ne 0 -a $EVAL -ne 0 ]; then
@@ -331,23 +382,21 @@ if [ $BACKUP -ne 0 -o $SIZE -ne 0 ]; then
     df -h $D
     { set +ex; } 2>/dev/null
 
-    (
     if [ $VERB -eq 0 ]; then
       set -x
       cd $WDIR
-      tar cvf $D/$ARCH $BOPT $BDIR > /dev/null
+      tar cvf $D/$ARCH $BOPT $EDIR > /dev/null
       { set +x; } 2>/dev/null
     else
       set -x
       cd $WDIR
-      tar cvf $D/$ARCH $BOPT $BDIR
+      tar cvf $D/$ARCH $BOPT $EDIR
       { set +x; } 2>/dev/null
     fi
 
     set -x
     gzip -fv $D/$ARCH
     { set +x; } 2>/dev/null
-    ) 2>&1 |  GREP_COLORS="mt=01;35" grep --color=auto ".*"
 
     T2=$(date +%s)
     T3=$(expr $T2 - $T1)
@@ -410,10 +459,17 @@ if [ $BACKUP_LIST -ne 0 ]; then
   (( $s != 0 )) && echo; ((++s))
   echo "$ID: stage: BACKUP-LIST"
 
-  set -x
-  tree --noreport -F -h -C -L 1 -I perm $ADIR
-  tree --noreport -F -h -C -L 1 -I perm $PDIR
-  { set +x; } 2>/dev/null
+  if [ -d "$ADIR" ]; then
+    set -x
+    tree --noreport -F -h -C -L 1 -I perm $ADIR
+    { set +x; } 2>/dev/null
+  fi
+
+  if [ -d "$PDIR" ]; then
+    set -x
+    tree --noreport -F -h -C -L 1 -I perm $PDIR
+    { set +x; } 2>/dev/null
+  fi
 fi
 
 #
