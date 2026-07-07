@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260706"
+VERSION_BIN="260707"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -552,14 +552,14 @@ if [ $BACKUP_ONLINE_LIST -ne 0 ]; then
 
   if [ "$A" != "bpgsql" ]; then
     set -x
-    tree --noreport -F -h -C -L 2 -l -I perm $ADIR
+    tree --noreport -F -C -L 2 -l -I perm $ADIR
     { set +x; } 2>/dev/null
     if [ -d $PDIR ]; then
-      tree --noreport -F -h -C -L 2 -l -I perm $PDIR
+      tree --noreport -F -C -L 2 -l -I perm $PDIR
     fi
   else
     set -x
-    tree --noreport -F -h -C -l $BADIR
+    tree --noreport -F -C -l $BADIR
     { set +x; } 2>/dev/null
   fi
 fi
