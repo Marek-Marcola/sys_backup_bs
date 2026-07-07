@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260707"
+VERSION_BIN="260708"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -17,7 +17,6 @@ ROTATE=0
 SIZE=0
 PERM=0
 SYNC=0
-LIST=0
 ESHOW=0
 ESHOW_RE=""
 EEDIT=0
@@ -96,11 +95,6 @@ while [ $# -gt 0 ]; do
       [[ $BACKUP -eq 0 ]] && QUIET=1
       shift
       ;;
-    -ls)
-      LIST=1
-      QUIET=1
-      shift
-      ;;
     -b)
       BACKUP=1
       BACKUP_LIST=1
@@ -151,7 +145,6 @@ if [ $HELP -eq 1 ]; then
   echo "$SN -E                        # env edit"
   echo ""
   echo "$SN -l                        # list backup"
-  echo "$SN -ls                       # list system"
   echo "$SN -z                        # backup size"
   echo "$SN -B [-x] [-v] [-p]         # backup,exec,verbose,permanent"
   echo "$SN -R [-x]                   # rotate,exec"
@@ -482,20 +475,6 @@ if [ $BACKUP_LIST -ne 0 ]; then
   if [ -d "$PDIR" ]; then
     set -x
     tree --noreport -F -h -C -L 1 -I perm $PDIR
-    { set +x; } 2>/dev/null
-  fi
-fi
-
-#
-# stage: LIST
-#
-if [ $LIST -ne 0 ]; then
-  (( $s != 0 )) && echo; ((++s))
-  echo "$ID: stage: LIST"
-
-  if [ $LIST -eq 1 ]; then
-    set -x
-    tree --noreport -F -C /usr/local/backup
     { set +x; } 2>/dev/null
   fi
 fi
