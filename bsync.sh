@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260709"
+VERSION_BIN="260711"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -27,6 +27,7 @@ s=0
 : ${APN:=$(echo $A|cut -d- -f2)}
 : ${API:=$(echo $A|cut -d- -f3-)}
 : ${LDIR:="/usr/local/bin/alias-bs"}
+: ${EDIR:="/usr/local/etc/bsync.d"}
 : ${COMM:=$(readlink -f ${BASH_SOURCE})}
 
 while [ $# -gt 0 ]; do
@@ -69,16 +70,21 @@ while [ $# -gt 0 ]; do
       EEDIT=1
       shift
       ;;
+    -M)
+      FSMOUNT=1
+      FSUMOUNT=1
+      shift
+      ;;
     -m)
       FSMOUNT=1
       shift
       ;;
-    -B)
-      BACKUP=1
-      shift
-      ;;
     -u)
       FSUMOUNT=1
+      shift
+      ;;
+    -B)
+      BACKUP=1
       shift
       ;;
     -x)
@@ -125,14 +131,17 @@ if [ $HELP -eq 1 ]; then
   echo ""
   echo "$SN -l                        # list backup"
   echo "$SN                           # info"
+  echo ""
+  echo "env files: $(dirname $EDIR)/bsync.env $EDIR/\$A"
+  echo ""
+  echo "alias:"
+  echo "  -M = -m -u"
   exit 0
 fi
 
 #
 # stage: CONFIG
 #
-: ${EDIR=/usr/local/etc/bsync.d}
-
 for f in $(dirname $EDIR)/bsync.env $EDIR/$A; do
   if [ -e $f ]; then
     [[ "$EFILE" != "" ]] && EFILE="$EFILE $f" || EFILE="$f"
