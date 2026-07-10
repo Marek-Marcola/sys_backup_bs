@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260708"
+VERSION_BIN="260709"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -11,6 +11,8 @@ INSTALL_ANPB_HP="bs"
 VERSION=0
 STAGE_LIST=0
 LINK=0
+FSMOUNT=0
+FSUMOUNT=0
 BACKUP=0
 ESHOW=0
 ESHOW_RE=""
@@ -67,8 +69,16 @@ while [ $# -gt 0 ]; do
       EEDIT=1
       shift
       ;;
+    -m)
+      FSMOUNT=1
+      shift
+      ;;
     -B)
       BACKUP=1
+      shift
+      ;;
+    -u)
+      FSUMOUNT=1
       shift
       ;;
     -x)
@@ -107,6 +117,9 @@ if [ $HELP -eq 1 ]; then
   echo ""
   echo "$SN -s [re]                   # env show"
   echo "$SN -E                        # env edit"
+  echo ""
+  echo "$SN -m                        # fs mount"
+  echo "$SN -u                        # fs umount"
   echo ""
   echo "$SN -B [-x]                   # backup test,exec"
   echo ""
@@ -213,6 +226,8 @@ if [ $QUIET -eq 0 ]; then
   echo "APN    = ${APN:-[none]}"
   echo "API    = ${API:-[none]}"
   echo "ldir   = $LDIR"
+  echo "FSDEV  = ${FSDEV:-[none]}"
+  echo "FSDIR  = ${FSDIR:-[none]}"
   echo "OPTS   = "${OPTS[@]}""
   echo -n "SYNC   = "
   if [ -n "$SYNC" ]; then
@@ -265,6 +280,45 @@ if [ $LINK -ne 0 ]; then
 fi
 
 #
+# stage: FS-MOUNT
+#
+if [ $FSMOUNT -ne 0 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: FS-MOUNT"
+
+  if [ -z "$FSDEV" -o -z "$FSDIR" ]; then
+    echo "error: require fsdev,fsdir"
+    exit 1
+  fi
+
+  if ! $(mountpoint -q $FSDIR); then
+    if expr match $FSDEV LABEL: > /dev/null; then
+      L=$(echo $FSDEV|awk -F: '{print $2}')
+      L=$(blkid -o udev|grep ID_FS_LABEL=|awk -F= '{print $2}'|grep $L|head -1)
+
+      if [ -n "$L" ]; then
+        set -ex
+        mount LABEL=$L $FSDIR
+        df -h $FSDIR
+        { set +ex; } 2>/dev/null
+      else
+        echo "error: unable to find disk label with re $FSDEV"
+        exit 1
+      fi
+    else
+      set -ex
+      mount $FSDEV $FSDIR
+      df -h $FSDIR
+      { set +ex; } 2>/dev/null
+    fi
+  else
+   set -ex
+   df -h $FSDIR
+   { set +ex; } 2>/dev/null
+  fi
+fi
+
+#
 # stage: BACKUP
 #
 if [ $BACKUP -ne 0 ]; then
@@ -282,6 +336,25 @@ if [ $BACKUP -ne 0 ]; then
     { set +ex; } 2>/dev/null
     echo
   done
+fi
+
+#
+# stage: FS-UMOUNT
+#
+if [ $FSUMOUNT -ne 0 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: FS-UMOUNT"
+
+  if [ -z "$FSDIR" ]; then
+    echo "error: require fsdir"
+    exit 1
+  fi
+
+  if $(mountpoint -q $FSDIR); then
+    set -ex
+    umount $FSDIR
+    { set +ex; } 2>/dev/null
+  fi
 fi
 
 #
