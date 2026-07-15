@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260711"
+VERSION_BIN="260715"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -150,7 +150,7 @@ for f in $(dirname $EDIR)/bsync.env $EDIR/$A; do
 done
 
 if [ -z "$OPTS" ]; then
-  OPTS=( "-azx" "-W" "-i" )
+  OPTS=( "-axz" "-W" "-i" )
 fi
 
 #
@@ -242,7 +242,7 @@ if [ $QUIET -eq 0 ]; then
   if [ -n "$SYNC" ]; then
   {
     for i in "${SYNC[@]}"; do
-      echo $i
+      echo "$i"
     done
   } | sed '2,$s/^/         /'
   else
@@ -337,7 +337,7 @@ if [ $BACKUP -ne 0 ]; then
   [[ $EVAL -ne 1 ]] && EVAL_OPT="-n" || EVAL_OPT=""
 
   for i in "${SYNC[@]}"; do
-    if [ "$i" = "" ]; then
+    if [ "$i" = "" -o "$i" = "-" ]; then
       continue
     fi
     set -ex
@@ -345,6 +345,12 @@ if [ $BACKUP -ne 0 ]; then
     { set +ex; } 2>/dev/null
     echo
   done
+
+  if [ -d "$D" ]; then
+    set -ex
+    ls -lh $D
+    { set +ex; } 2>/dev/null
+  fi
 fi
 
 #
