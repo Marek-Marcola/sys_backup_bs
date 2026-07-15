@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260708"
+VERSION_BIN="260715"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -180,7 +180,7 @@ done
 : ${VDIR:=$BVDIR/$API}
 : ${ETAG:=bfs.tag}
 : ${BOPT:="--totals"}
-: ${SOPT:="-azx -W -i --delete"}
+: ${SOPT:="-axz -W -i"}
 : ${ANUM:=5}
 : ${ARCH:=bfs-$API-$(date "+%y%m%d%H%M").tar}
 : ${PATT:="bfs-*.tar.gz"}
