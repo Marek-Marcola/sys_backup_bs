@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260707"
+VERSION_BIN="260715"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -212,7 +212,7 @@ fi
 : ${PATT="$PGCL-*/base.tar"}
 : ${ANUM=5}
 
-: ${SBOPTS="-azx -W -i --delete"}
+: ${SBOPTS="-axz -W -i"}
 : ${OBOPTS="-P -v -X stream -Ft"}
 : ${BBOPTS="-P -v -X stream -Fp -R"}
 
