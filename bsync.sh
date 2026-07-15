@@ -124,6 +124,7 @@ if [ $HELP -eq 1 ]; then
   echo "$SN -s [re]                   # env show"
   echo "$SN -E                        # env edit"
   echo ""
+  echo "$SN -M                        # fs mount/umount"
   echo "$SN -m                        # fs mount"
   echo "$SN -u                        # fs umount"
   echo ""
