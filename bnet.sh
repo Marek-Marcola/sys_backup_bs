@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260716"
+VERSION_BIN="260717"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -13,6 +13,7 @@ STAGE_LIST=0
 LINK=0
 BACKUP_MIKROTIK=0
 BACKUP_HPSW=0
+BACKUP_TPLINK=0
 GIT=0
 ESHOW=0
 ESHOW_RE=""
@@ -118,7 +119,7 @@ while [ $# -gt 0 ]; do
 done
 
 if [ $HELP -eq 1 ]; then
-  echo "Backup network device."
+  echo "Backup network device (mikrotik,hpsw,tplink)."
   echo ""
   echo "$SN -ver                      # version"
   echo "$SN -inst [-x]                # install with rsync"
@@ -132,11 +133,13 @@ if [ $HELP -eq 1 ]; then
   echo ""
   echo "$SN -Bm [-x]                  # backup mikrotik,exec"
   echo "$SN -Bh [-x]                  # backup hpsw,exec"
+  echo "$SN -Bt [-x]                  # backup tplink,exec"
   echo ""
   echo "$SN -G  [-x]                  # git commit/push,exec"
   echo ""
   echo "$SN -bmg                      # alias: -Bm -G -x"
   echo "$SN -bhg                      # alias: -Bh -G -x"
+  echo "$SN -btg                      # alias: -Bt -G -x"
   echo ""
   echo "$SN                           # info"
   exit 0
