@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260715"
+VERSION_BIN="260716"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -124,9 +124,9 @@ if [ $HELP -eq 1 ]; then
   echo "$SN -s [re]                   # env show"
   echo "$SN -E                        # env edit"
   echo ""
-  echo "$SN -M                        # fs mount/umount"
   echo "$SN -m                        # fs mount"
   echo "$SN -u                        # fs umount"
+  echo "$SN -M                        # alias: -m -u"
   echo ""
   echo "$SN -B [-x]                   # backup test,exec"
   echo ""
@@ -134,9 +134,6 @@ if [ $HELP -eq 1 ]; then
   echo "$SN                           # info"
   echo ""
   echo "env files: $(dirname $EDIR)/bsync.env $EDIR/\$A"
-  echo ""
-  echo "alias:"
-  echo "  -M = -m -u"
   exit 0
 fi
 
