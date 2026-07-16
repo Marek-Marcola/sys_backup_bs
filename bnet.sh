@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260707"
+VERSION_BIN="260716"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -118,6 +118,8 @@ while [ $# -gt 0 ]; do
 done
 
 if [ $HELP -eq 1 ]; then
+  echo "Backup network device."
+  echo ""
   echo "$SN -ver                      # version"
   echo "$SN -inst [-x]                # install with rsync"
   echo "$SN -anpb [host_pattern] [-x] # install with ansible"
@@ -130,12 +132,13 @@ if [ $HELP -eq 1 ]; then
   echo ""
   echo "$SN -Bm [-x]                  # backup mikrotik,exec"
   echo "$SN -Bh [-x]                  # backup hpsw,exec"
-  echo "$SN -G  [-x]                  # git commit/push,exec"
-  echo "$SN                           # info"
   echo ""
-  echo "aliases:"
-  echo "  -bmg = -Bm -G -x"
-  echo "  -bhg = -Bh -G -x"
+  echo "$SN -G  [-x]                  # git commit/push,exec"
+  echo ""
+  echo "$SN -bmg                      # alias: -Bm -G -x"
+  echo "$SN -bhg                      # alias: -Bh -G -x"
+  echo ""
+  echo "$SN                           # info"
   exit 0
 fi
 
