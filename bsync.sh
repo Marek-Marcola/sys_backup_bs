@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260716"
+VERSION_BIN="260717"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -20,6 +20,8 @@ EEDIT=0
 EVAL=0
 HELP=0
 QUIET=0
+
+BLOG=""
 
 s=0
 
@@ -235,6 +237,7 @@ if [ $QUIET -eq 0 ]; then
   echo "ldir   = $LDIR"
   echo "FSDEV  = ${FSDEV:-[none]}"
   echo "FSDIR  = ${FSDIR:-[none]}"
+  echo "BLOG   = ${BLOG:-[none]}"
   echo "OPTS   = "${OPTS[@]}""
   echo -n "SYNC   = "
   if [ -n "$SYNC" ]; then
@@ -344,9 +347,19 @@ if [ $BACKUP -ne 0 ]; then
     echo
   done
 
-  if [ -d "$D" ]; then
+  if [ -n "$BLOG" -a $EVAL -ne 0 ]; then
+    if [ -d "$BLOG" ]; then
+      BLOG=$BLOG/bsync.log
+    fi
+    echo blog: app=$A date=$(date "+%y%m%d_%H:%M") bsync_host=$(hostname) type=file | tee -a $BLOG
+  else
+    echo blog: app=$A date=$(date "+%y%m%d_%H:%M") bsync_host=$(hostname) type=echo
+  fi
+
+  if [ -d "$ROOT" ]; then
+    echo
     set -ex
-    ls -lh $D
+    ls -lh $ROOT
     { set +ex; } 2>/dev/null
   fi
 fi
