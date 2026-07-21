@@ -3,13 +3,13 @@ backup scripts
 
 Backup scripts.
 
-Deployment models: fs, sync, pgsql, net(mikrotik,hpsw)
+Deployment models: filesystem(tar,rsync), pgsql, net(mikrotik,hpsw,tplink)
 
 Install
 -------
 Install:
 
-    ./bfs.sh --install
+    ./bfs.sh --inst -x
     -- or --
     cp -fv bfs.sh    /usr/local/bin
     cp -fv bsync.sh  /usr/local/bin
@@ -27,7 +27,7 @@ Postinstall:
 
 Verify:
 
-    bfs.sh --version
+    bfs.sh --ver
 
 Help:
 
