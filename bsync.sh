@@ -380,8 +380,11 @@ if [ $FSUMOUNT -ne 0 ]; then
 
   if $(mountpoint -q $FSDIR); then
     set -ex
+     df -h $FSDIR
     umount $FSDIR
     { set +ex; } 2>/dev/null
+  else
+    echo info: filesystem $FSDIR not mounted
   fi
 fi
 
