@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260715"
+VERSION_BIN="260721"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -134,6 +134,8 @@ done
 # stage: HELP
 #
 if [ $HELP -eq 1 ]; then
+  echo "Backup filesystem (tar)."
+  echo ""
   echo "$SN -ver                      # version"
   echo "$SN -inst [-x]                # install with rsync"
   echo "$SN -anpb [host_pattern] [-x] # install with ansible"
