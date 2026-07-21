@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260717"
+VERSION_BIN="260721"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -29,6 +29,7 @@ s=0
 : ${APN:=$(echo $A|cut -d- -f2)}
 : ${API:=$(echo $A|cut -d- -f3-)}
 : ${LDIR:="/usr/local/bin/alias-bs"}
+: ${EDIR:="/usr/local/etc/bnet.d"}
 : ${COMM:=$(readlink -f ${BASH_SOURCE})}
 
 while [ $# -gt 0 ]; do
@@ -148,17 +149,12 @@ fi
 #
 # stage: CONFIG
 #
-: ${EDIR=/usr/local/etc/bnet.d}
-
-if [ -f $(dirname $EDIR)/bnet.env ]; then
-  . $(dirname $EDIR)/bsw.env
-  EFILE=$(dirname $EDIR)/bnet.env
-fi
-
-if [ -f $EDIR/$A ]; then
-  . $EDIR/$A
-  EFILE="$EFILE $EDIR/$A"
-fi
+for f in $(dirname $EDIR)/bnet.env $EDIR/$A; do
+  if [ -e $f ]; then
+    [[ "$EFILE" != "" ]] && EFILE="$EFILE $f" || EFILE="$f"
+    . $f
+  fi
+done
 
 : ${WDIR=/}
 
