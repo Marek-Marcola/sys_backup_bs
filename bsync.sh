@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260721"
+VERSION_BIN="260722"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -14,6 +14,7 @@ LINK=0
 FSMOUNT=0
 FSUMOUNT=0
 BACKUP=0
+BACKUP_SET=0
 ESHOW=0
 ESHOW_RE=""
 EEDIT=0
@@ -89,6 +90,11 @@ while [ $# -gt 0 ]; do
       BACKUP=1
       shift
       ;;
+    -BS)
+      BACKUP_SET=1
+      [[ -n "$2" && ${2:0:1} != "-" ]] && BSET="$2" && shift
+      shift
+      ;;
     -x)
       EVAL=1
       shift
@@ -132,7 +138,8 @@ if [ $HELP -eq 1 ]; then
   echo "$SN -u                        # fs umount"
   echo "$SN -M                        # alias: -m -u"
   echo ""
-  echo "$SN -B [-x]                   # backup test,exec"
+  echo "$SN -B  [-x]                  # backup test,exec"
+  echo "$SN -BS [list] [-x]           # backup set test,exec"
   echo ""
   echo "$SN -l                        # list backup"
   echo "$SN                           # info"
@@ -239,6 +246,7 @@ if [ $QUIET -eq 0 ]; then
   echo "ldir   = $LDIR"
   echo "FSDEV  = ${FSDEV:-[none]}"
   echo "FSDIR  = ${FSDIR:-[none]}"
+  echo "BSET   = ${BSET:-[none]}"
   echo "BLOG   = ${BLOG:-[none]}"
   echo "OPTS   = "${OPTS[@]}""
   echo -n "SYNC   = "
@@ -339,6 +347,13 @@ if [ $BACKUP -ne 0 ]; then
 
   [[ $EVAL -ne 1 ]] && EVAL_OPT="-n" || EVAL_OPT=""
 
+  if [ -n "$ROOT" ]; then
+    if [ ! -d "$ROOT" ]; then
+      echo "error: root dir not found: $ROOT"
+      exit 1
+    fi
+  fi
+
   for i in "${SYNC[@]}"; do
     if [ "$i" = "" -o "$i" = "-" ]; then
       continue
@@ -364,6 +379,36 @@ if [ $BACKUP -ne 0 ]; then
     ls -lh $ROOT
     { set +ex; } 2>/dev/null
   fi
+fi
+
+#
+# stage: BACKUP-SET
+#
+if [ $BACKUP_SET -ne 0 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: BACKUP-SET (EVAL=$EVAL)"
+
+  if [ -z "$BSET" ]; then
+    echo "error: require bset"
+    exit 1
+  fi
+
+  [[ $EVAL  -ne 1 ]] && EVAL_OPT=""  || EVAL_OPT="-x"
+  [[ $QUIET -ne 1 ]] && QUIET_OPT="" || QUIET_OPT="-q"
+
+  BSET=$(echo $BSET|sed 's/,/ /g')
+
+  for i in $BSET; do
+    if [ $(type -t bs-bsync-$i) ]; then
+      echo
+      set -ex
+      bs-bsync-$i -B $EVAL_OPT $QUIET_OPT
+      { set +ex; } 2>/dev/null
+    else
+      echo
+      echo "error: backup spec not found: bs-bsync-$i"
+    fi
+  done
 fi
 
 #
