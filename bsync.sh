@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260722"
+VERSION_BIN="260723"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -246,8 +246,12 @@ if [ $QUIET -eq 0 ]; then
   echo "ldir   = $LDIR"
   echo "FSDEV  = ${FSDEV:-[none]}"
   echo "FSDIR  = ${FSDIR:-[none]}"
-  echo "BSET   = ${BSET:-[none]}"
   echo "BLOG   = ${BLOG:-[none]}"
+  if [ -n "$BSET" ]; then
+    echo "BSET   = $(echo $BSET|sed 's/ /\n/g'|sed '2,$s/^/         /')"
+  else
+    echo "BSET   = [none]"
+  fi
   echo "OPTS   = "${OPTS[@]}""
   echo -n "SYNC   = "
   if [ -n "$SYNC" ]; then
