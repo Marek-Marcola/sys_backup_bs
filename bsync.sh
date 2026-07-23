@@ -362,18 +362,20 @@ if [ $BACKUP -ne 0 ]; then
     if [ "$i" = "" -o "$i" = "-" ]; then
       continue
     fi
+    echo
     set -ex
     rsync "${OPTS[@]}" $EVAL_OPT $i 2>&1
     { set +ex; } 2>/dev/null
-    echo
   done
 
   if [ -n "$BLOG" -a $EVAL -ne 0 ]; then
     if [ -d "$BLOG" ]; then
       BLOG=$BLOG/bsync.log
     fi
+    echo
     echo blog: app=$A date=$(date "+%y%m%d_%H:%M") bsync_host=$(hostname) type=file | tee -a $BLOG
   else
+    echo
     echo blog: app=$A date=$(date "+%y%m%d_%H:%M") bsync_host=$(hostname) type=echo
   fi
 
