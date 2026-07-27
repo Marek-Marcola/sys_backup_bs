@@ -52,3 +52,7 @@ bsync env set:
 
     # cat /usr/local/etc/bsync.d/bs-bsync-s-k
     [[ -z "$BSET" ]] && BSET="d-k1,d-k2"
+
+bsync aliases:
+
+    # bsync.sh -L -x
