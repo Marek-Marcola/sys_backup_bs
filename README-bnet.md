@@ -12,9 +12,16 @@ bnet env:
     WDIR=/var/opt/backup/bnet
     REPO=net_config_dc1_mikrotik
 
-git repo:
+git repo with gitolite:
 
     # mkdir -pv /var/opt/backup/bnet/net_config_dc1_mikrotik
     # cd /var/opt/backup/bnet/net_config_dc1_mikrotik
     # git init
     # git commit --allow-empty -m "root-commit"
+
+    # ssh -p 2222 git@git1 create net/net_config_dc1_mikrotik
+    # ssh -p 2222 git@git1 desc net/net_config_dc1_mikrotik "Mikrotik device config"
+    # ssh -p 2222 git@git1 info -ld
+
+    # git remote add git1 ssh://git@git1:2222/net/net_config_dc1_mikrotik
+    # git push -u git1 main
