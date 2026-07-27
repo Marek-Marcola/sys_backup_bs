@@ -48,5 +48,7 @@ bsync env:
      "root@$HN:/vol/v01/vms/    $ROOT/vol/v01/vms --exclude *.qcow2"
     )
 
+bsync env set:
+
     # cat /usr/local/etc/bsync.d/bs-bsync-s-k
     [[ -z "$BSET" ]] && BSET="d-k1,d-k2"
