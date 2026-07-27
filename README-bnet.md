@@ -12,6 +12,10 @@ bnet env:
     WDIR=/var/opt/backup/bnet
     REPO=net_config_dc1_mikrotik
 
+bnet aliases:
+
+    # bnet.sh -L -x
+
 git repo with gitolite:
 
     # mkdir -pv /var/opt/backup/bnet/net_config_dc1_mikrotik
