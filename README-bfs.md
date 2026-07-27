@@ -5,9 +5,13 @@ Config
 ------
 bfs env:
 
-    # cat cat /usr/local/etc/bfs.d/bs-bfs-sys
+    # cat /usr/local/etc/bfs.d/bs-bfs-sys
     BDIR=( etc root "usr/local/{bin,etc}" "opt/local/{bin,etc}" )
     API=$(hostname -s)
+
+bfs aliases:
+
+    # bfs.sh -L -x
 
 crontab:
 
