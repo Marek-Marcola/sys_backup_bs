@@ -16,7 +16,7 @@ git repo with gitolite:
 
     # mkdir -pv /var/opt/backup/bnet/net_config_dc1_mikrotik
     # cd /var/opt/backup/bnet/net_config_dc1_mikrotik
-    # git init
+    # git init -b main
     # git commit --allow-empty -m "root-commit"
 
     # ssh -p 2222 git@git1 create net/net_config_dc1_mikrotik
