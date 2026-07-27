@@ -12,6 +12,21 @@ bsync env:
     FSDEV=LABEL:disk
     FSDIR=/vol/mnt
 
+    # cat /usr/local/etc/bsync.d/bs-bsync-d-k1
+    HN=k1
+
+    ROOT=$FSDIR/$APN/$HN
+    BLOG=$ROOT
+
+    SYNC=(
+     "root@$HN:/etc             $ROOT"
+     "root@$HN:/home            $ROOT"
+     "root@$HN:/root            $ROOT --exclude /root/.vagrant.d --exclude /root/.apptainer"
+     "root@$HN:/usr/local/etc   $ROOT/usr/local"
+     "root@$HN:/usr/local/bin   $ROOT/usr/local"
+     "root@$HN:/var/opt/backup/ $ROOT/var/opt/backup"
+    )
+
     # cat /usr/local/etc/bsync.d/bs-bsync-d-k2
     HN=k2
 
@@ -32,3 +47,6 @@ bsync env:
      -
      "root@$HN:/vol/v01/vms/    $ROOT/vol/v01/vms --exclude *.qcow2"
     )
+
+    # cat /usr/local/etc/bsync.d/bs-bsync-s-k
+    [[ -z "$BSET" ]] && BSET="d-k1,d-k2"
