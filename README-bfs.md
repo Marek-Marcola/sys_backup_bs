@@ -9,6 +9,10 @@ bfs env:
     BDIR=( etc root "usr/local/{bin,etc}" "opt/local/{bin,etc}" )
     API=$(hostname -s)
 
+bfs configs:
+
+    # bs
+
 bfs aliases:
 
     # bfs.sh -L -x
