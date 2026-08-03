@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260723"
+VERSION_BIN="260803"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -99,6 +99,20 @@ while [ $# -gt 0 ]; do
       EVAL=1
       shift
       ;;
+    -bsx)
+      BACKUP_SET=1
+      [[ -n "$2" && ${2:0:1} != "-" ]] && BSET="$2" && shift
+      EVAL=1
+      shift
+      ;;
+    -bsxm)
+      BACKUP_SET=1
+      [[ -n "$2" && ${2:0:1} != "-" ]] && BSET="$2" && shift
+      EVAL=1
+      FSMOUNT=1
+      FSUMOUNT=1
+      shift
+      ;;
     -h|-help|--help)
       HELP=1
       shift
@@ -140,6 +154,9 @@ if [ $HELP -eq 1 ]; then
   echo ""
   echo "$SN -B  [-x]                  # backup test,exec"
   echo "$SN -BS [list] [-x]           # backup set test,exec"
+  echo ""
+  echo "$SN -bsx  [list]              # alias: -BS -x"
+  echo "$SN -bsxm [list]              # alias: -BS -x -m -u"
   echo ""
   echo "$SN -l                        # list backup"
   echo "$SN                           # info"
