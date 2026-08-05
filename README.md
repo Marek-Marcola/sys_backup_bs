@@ -11,6 +11,8 @@ Install:
 
     ./bfs.sh --inst -x
     -- or --
+    ./bfs.sh --anpb -x
+    -- or --
     cp -fv bfs.sh    /usr/local/bin
     cp -fv bsync.sh  /usr/local/bin
     cp -fv bpgsql.sh /usr/local/bin
