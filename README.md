@@ -9,9 +9,9 @@ Install
 -------
 Install:
 
-    ./bfs.sh --inst -x
+    bfs.sh --inst -x
     -- or --
-    ./bfs.sh --anpb -x
+    bfs.sh --anpb -x
     -- or --
     cp -fv bfs.sh    /usr/local/bin
     cp -fv bsync.sh  /usr/local/bin
