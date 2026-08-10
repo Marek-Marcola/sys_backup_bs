@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260803"
+VERSION_BIN="260811"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -355,6 +355,7 @@ if [ $FSMOUNT -ne 0 ]; then
         set -ex
         mount LABEL=$L $FSDIR
         df -h $FSDIR
+        ls -l $FSDIR
         { set +ex; } 2>/dev/null
       else
         echo "error: unable to find disk label with re $FSDEV"
