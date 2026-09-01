@@ -1,11 +1,12 @@
 #!/bin/bash
 
-VERSION_BIN="260811"
+VERSION_BIN="260901"
 
 SN="${0##*/}"
 ID="[$SN]"
 
 INSTALL_RSYNC=0
+INSTALL_RSYNC_HL="$(hostname -s)"
 INSTALL_ANPB=0
 INSTALL_ANPB_HP="bs"
 VERSION=0
@@ -41,6 +42,7 @@ while [ $# -gt 0 ]; do
       ;;
     --inst*|-inst*)
       INSTALL_RSYNC=1
+      [[ -n "$2" && ${2:0:1} != "-" ]] && INSTALL_RSYNC_HL="$2" && shift
       shift
       ;;
     --anpb|-anpb)
@@ -151,7 +153,7 @@ if [ $HELP -eq 1 ]; then
   echo "Backup filesystem (rsync)."
   echo ""
   echo "$SN -ver                      # version"
-  echo "$SN -inst [-x]                # install with rsync"
+  echo "$SN -inst [host_list]    [-x] # install with rsync"
   echo "$SN -anpb [host_pattern] [-x] # install with ansible"
   echo "$SN -stage                    # stage list"
   echo ""
@@ -207,7 +209,7 @@ fi
 #
 if [ $INSTALL_RSYNC -eq 1 ]; then
   (( $s != 0 )) && echo; ((++s))
-  echo "$ID: stage: INSTALL-RSYNC"
+  echo "$ID: stage: INSTALL-RSYNC (EVAL=$EVAL HL=$INSTALL_RSYNC_HL)"
 
   [[ $EVAL -ne 1 ]] && EVAL_OPT="-n" || EVAL_OPT=""
 
@@ -223,12 +225,14 @@ if [ $INSTALL_RSYNC -eq 1 ]; then
       fi
     done
   elif [ -f /pub/pkb/pb/playbooks/001010-backup/files/bfs.sh ]; then
-    set -ex
-    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bfs.sh    /usr/local/bin/
-    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bsync.sh  /usr/local/bin/
-    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bnet.sh   /usr/local/bin/
-    rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bpgsql.sh /usr/local/bin/
-    { set +ex; } 2>/dev/null
+    for h in $(echo $INSTALL_RSYNC_HL|sed 's/,/ /g'); do
+      set -ex
+      rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bfs.sh    $h:/usr/local/bin
+      rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bsync.sh  $h:/usr/local/bin
+      rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bnet.sh   $h:/usr/local/bin
+      rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bpgsql.sh $h:/usr/local/bin
+      { set +ex; } 2>/dev/null
+    done
   fi
 
   exit 0
@@ -239,7 +243,7 @@ fi
 #
 if [ $INSTALL_ANPB -eq 1 ]; then
   (( $s != 0 )) && echo; ((++s))
-  echo "$ID: stage: INSTALL-ANPB (EVAL=$EVAL)"
+  echo "$ID: stage: INSTALL-ANPB (EVAL=$EVAL HP=$INSTALL_ANPB_HP)"
 
   if [ ! $(type -t anpb) ]; then
     echo "$ID: error: command not found: anpb"
