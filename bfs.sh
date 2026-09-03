@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260901"
+VERSION_BIN="260904"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -234,6 +234,22 @@ if [ $INSTALL_RSYNC -eq 1 ]; then
       rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bsync.sh  $h:/usr/local/bin
       rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bnet.sh   $h:/usr/local/bin
       rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bpgsql.sh $h:/usr/local/bin
+      { set +ex; } 2>/dev/null
+    done
+  fi
+
+  if [ -f zlocal-backup.sh ]; then
+    for d in /etc/profile.d/ /pub/pkb/pb/playbooks/001010-backup/files/; do
+      if [ -d $d ]; then
+        set -ex
+        rsync -ai $EVAL_OPT zlocal-backup.sh $d
+        { set +ex; } 2>/dev/null
+      fi
+    done
+  elif [ -f /pub/pkb/pb/playbooks/001010-backup/files/zlocal-backup.sh ]; then
+    for h in $(echo $INSTALL_RSYNC_HL|sed 's/,/ /g'); do
+      set -ex
+      rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/zlocal-backup.sh $h:/etc/profile.d/zlocal-backup.sh
       { set +ex; } 2>/dev/null
     done
   fi
