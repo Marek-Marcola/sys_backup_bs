@@ -1,14 +1,10 @@
 #!/bin/bash
 
-VERSION_BIN="260901"
+VERSION_BIN="260904"
 
 SN="${0##*/}"
 ID="[$SN]"
 
-INSTALL_RSYNC=0
-INSTALL_RSYNC_HL="$(hostname -s)"
-INSTALL_ANPB=0
-INSTALL_ANPB_HP="bs"
 VERSION=0
 STAGE_LIST=0
 LINK=0
@@ -37,16 +33,6 @@ while [ $# -gt 0 ]; do
   case $1 in
     --ver*|-ver*)
       VERSION=1
-      shift
-      ;;
-    --inst*|-inst*)
-      INSTALL_RSYNC=1
-      [[ -n "$2" && ${2:0:1} != "-" ]] && INSTALL_RSYNC_HL="$2" && shift
-      shift
-      ;;
-    --anpb|-anpb)
-      INSTALL_ANPB=1
-      [[ -n "$2" && ${2:0:1} != "-" ]] && INSTALL_ANPB_HP="$2" && shift
       shift
       ;;
     --stage|-stage)
@@ -125,8 +111,6 @@ if [ $HELP -eq 1 ]; then
   echo "Backup network device (mikrotik,hpsw,tplink)."
   echo ""
   echo "$SN -ver                      # version"
-  echo "$SN -inst [host_list]    [-x] # install with rsync"
-  echo "$SN -anpb [host_pattern] [-x] # install with ansible"
   echo "$SN -stage                    # stage list"
   echo ""
   echo "$SN -L [-x]                   # link show,run"
@@ -166,61 +150,6 @@ done
 if [ $VERSION -eq 1 ]; then
   echo "${0##*/}  $VERSION_BIN"
   [[ "$VERSION_ENV" != "" ]] && echo "bfs.env $VERSION_ENV"
-  exit 0
-fi
-
-#
-# stage: INSTALL-RSYNC
-#
-if [ $INSTALL_RSYNC -eq 1 ]; then
-  (( $s != 0 )) && echo; ((++s))
-  echo "$ID: stage: INSTALL-RSYNC (EVAL=$EVAL HL=$INSTALL_RSYNC_HL)"
-
-  [[ $EVAL -ne 1 ]] && EVAL_OPT="-n" || EVAL_OPT=""
-
-  if [ -f bfs.sh ]; then
-    for d in /usr/local/bin /pub/pkb/kb/data/001010-backup/001010-000170_backup_scripts /pub/pkb/pb/playbooks/001010-backup/files; do
-      if [ -d $d ]; then
-        set -ex
-        rsync -ai $EVAL_OPT bfs.sh    $d/bfs.sh
-        rsync -ai $EVAL_OPT bsync.sh  $d/bsync.sh
-        rsync -ai $EVAL_OPT bnet.sh   $d/bnet.sh
-        rsync -ai $EVAL_OPT bpgsql.sh $d/bpgsql.sh
-        { set +ex; } 2>/dev/null
-      fi
-    done
-  elif [ -f /pub/pkb/pb/playbooks/001010-backup/files/bfs.sh ]; then
-    for h in $(echo $INSTALL_RSYNC_HL|sed 's/,/ /g'); do
-      set -ex
-      rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bfs.sh    $h:/usr/local/bin
-      rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bsync.sh  $h:/usr/local/bin
-      rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bnet.sh   $h:/usr/local/bin
-      rsync -ai $EVAL_OPT /pub/pkb/pb/playbooks/001010-backup/files/bpgsql.sh $h:/usr/local/bin
-      { set +ex; } 2>/dev/null
-    done
-  fi
-
-  exit 0
-fi
-
-#
-# stage: INSTALL-ANPB
-#
-if [ $INSTALL_ANPB -eq 1 ]; then
-  (( $s != 0 )) && echo; ((++s))
-  echo "$ID: stage: INSTALL-ANPB (EVAL=$EVAL HP=$INSTALL_ANPB_HP)"
-
-  if [ ! $(type -t anpb) ]; then
-    echo "$ID: error: command not found: anpb"
-    exit 1
-  fi
-
-  [[ $EVAL -ne 1 ]] && EVAL_OPT="--check --diff" || EVAL_OPT=""
-
-  set -ex
-  anpb bs_install.yml -e h=$INSTALL_ANPB_HP $EVAL_OPT
-  { set +ex; } 2>/dev/null
-
   exit 0
 fi
 
