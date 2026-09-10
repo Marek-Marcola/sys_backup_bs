@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260904"
+VERSION_BIN="260910"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -257,11 +257,11 @@ if [ $LINK -ne 0 ]; then
   echo "$ID: stage: LINK"
 
   if [ ! -d $EDIR ]; then
-    echo $ID: directory not found: $EDIR
+    echo $ID: E: directory not found: $EDIR
     exit 1
   fi
   if [ ! -d $LDIR ]; then
-    echo $ID: directory not found: $LDIR
+    echo $ID: E: directory not found: $LDIR
     exit 1
   fi
 
@@ -295,12 +295,12 @@ if [ $BACKUP_ONLINE -ne 0 ]; then
   echo "$ID: stage: BACKUP-ONLINE (EVAL=$EVAL,PERM=$PERM)"
 
   if [ "$A" = "bpgsql" ]; then
-    echo "$ID: error: require app"
+    echo "$ID: E: require app"
     exit 1
   fi
 
   if [ -z "$(type -p pg_basebackup)" ]; then
-    echo "$ID: error: command not found: pg_basebackup"
+    echo "$ID: E: command not found: pg_basebackup"
     exit 1
   fi
 
@@ -316,7 +316,7 @@ if [ $BACKUP_ONLINE -ne 0 ]; then
   fi
 
   if [ ! -d $D ]; then
-    echo no archive directory: $D
+    echo "$ID: E: no archive directory: $D"
     exit 1
   fi
 
@@ -329,6 +329,7 @@ if [ $BACKUP_ONLINE -ne 0 ]; then
     (
     set -x
 
+    pg_basebackup -V
     mkdir -pv $D/$TDIR
     pg_basebackup -D $D/$TDIR "${PGOPTS[@]}" $OBOPTS 2>&1
     ls -lh $D/$TDIR
@@ -337,6 +338,7 @@ if [ $BACKUP_ONLINE -ne 0 ]; then
     ) 2>&1 | stdbuf -o0 sed 's/^/  /' | GREP_COLORS="mt=01;35" grep --color=auto ".*"
   else
     (
+    echo pg_basebackup -V
     echo mkdir -pv $D/$TDIR
     echo pg_basebackup -D $D/$TDIR "${PGOPTS[@]}" $OBOPTS
     echo ls -lh $D/$TDIR
@@ -356,12 +358,12 @@ if [ $BACKUP_BASE -ne 0 ]; then
   echo "$ID: stage: BACKUP-BASE (EVAL=$EVAL)"
 
   if [ "$A" = "bpgsql" ]; then
-    echo "$ID: error: require app"
+    echo "$ID: E: require app"
     exit 1
   fi
 
   if [ -z "$(type -p pg_basebackup)"]; then
-    echo "$ID: error: command not found: pg_basebackup"
+    echo "$ID: E: command not found: pg_basebackup"
     exit 1
   fi
 
@@ -382,6 +384,7 @@ if [ $BACKUP_BASE -ne 0 ]; then
   if [ $EVAL -ne 0 ]; then
     (
     set -x
+    pg_basebackup -V
     setpriv --reuid=$PGUID --regid=$PGGID --clear-groups \
       pg_basebackup -D $BACKUP_BASE_DIR "${PGOPTS[@]}" $BBOPTS
     ls -lh $BACKUP_BASE_DIR
@@ -389,6 +392,7 @@ if [ $BACKUP_BASE -ne 0 ]; then
     ) 2>&1 | stdbuf -o0 sed 's/^/  /' | GREP_COLORS="mt=01;35" grep --color=auto ".*"
   else
     (
+    echo pg_basebackup -V
     echo setpriv --reuid=$PGUID --regid=$PGGID --clear-groups \
       pg_basebackup -D $BACKUP_BASE_DIR "${PGOPTS[@]}" $BBOPTS
     echo ls -lh $BACKUP_BASE_DIR
@@ -421,7 +425,7 @@ if [ $ROTATE -ne 0 ]; then
   echo "$ID: stage: ROTATE (EVAL=$EVAL,ANUM=$ANUM)"
 
   if [ "$A" = "" ]; then
-    echo "$ID: error: require app"
+    echo "$ID: E: require app"
     exit 1
   fi
 
@@ -465,7 +469,7 @@ if [ $SYNC -ne 0 ]; then
   echo "$ID: stage: SYNC (EVAL=$EVAL)"
 
   if [ "$A" = "bpgsql" ]; then
-    echo "$ID: error: require app"
+    echo "$ID: E: require app"
     exit 1
   fi
 
@@ -520,7 +524,7 @@ if [ $ESHOW -eq 1 ]; then
 
   if [ "$A" != "bpgsql" -a  "$ESHOW_RE" = "" ]; then
     if [ ! -f $EDIR/$A ]; then
-      echo file not found: $EDIR/$A
+      echo "$ID I: file not found: $EDIR/$A"
     else
       set -ex
       cat $EDIR/$A
@@ -546,7 +550,7 @@ if [ $EEDIT -eq 1 ]; then
   echo "$ID: stage: ENV-EDIT"
 
   if [ ! -d $EDIR ]; then
-    echo directory not found: $EDIR
+    echo "$ID I: directory not found: $EDIR"
   else
     if [ "$EDITOR" != "" ]; then
       set -ex
