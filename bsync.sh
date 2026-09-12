@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260904"
+VERSION_BIN="260912"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -237,11 +237,11 @@ if [ $LINK -ne 0 ]; then
   echo "$ID: stage: LINK"
 
   if [ ! -d $EDIR ]; then
-    echo $ID: directory not found: $EDIR
+    echo "$ID: E: directory not found: $EDIR"
     exit 1
   fi
   if [ ! -d $LDIR ]; then
-    echo $ID: directory not found: $LDIR
+    echo "$ID: E: directory not found: $LDIR"
     exit 1
   fi
 
@@ -275,7 +275,7 @@ if [ $FSMOUNT -ne 0 ]; then
   echo "$ID: stage: FS-MOUNT"
 
   if [ -z "$FSDEV" -o -z "$FSDIR" ]; then
-    echo "error: require fsdev,fsdir"
+    echo "$ID: E: require: fsdev,fsdir"
     exit 1
   fi
 
@@ -291,7 +291,7 @@ if [ $FSMOUNT -ne 0 ]; then
         ls -l $FSDIR
         { set +ex; } 2>/dev/null
       else
-        echo "error: unable to find disk label with re $FSDEV"
+        echo "$ID: E: unable to find disk label with re $FSDEV"
         exit 1
       fi
     else
@@ -318,7 +318,7 @@ if [ $BACKUP -ne 0 ]; then
 
   if [ -n "$ROOT" ]; then
     if [ ! -d "$ROOT" ]; then
-      echo "error: root dir not found: $ROOT"
+      echo "$ID: E: root dir not found: $ROOT"
       exit 1
     fi
   fi
@@ -360,7 +360,7 @@ if [ $BACKUP_SET -ne 0 ]; then
   echo "$ID: stage: BACKUP-SET (EVAL=$EVAL)"
 
   if [ -z "$BSET" ]; then
-    echo "error: require bset"
+    echo "$ID E: require: bset"
     exit 1
   fi
 
@@ -377,7 +377,7 @@ if [ $BACKUP_SET -ne 0 ]; then
       { set +ex; } 2>/dev/null
     else
       echo
-      echo "error: backup spec not found: bs-bsync-$i"
+      echo "$ID E: backup spec not found: bs-bsync-$i"
     fi
   done
 fi
@@ -390,7 +390,7 @@ if [ $FSUMOUNT -ne 0 ]; then
   echo "$ID: stage: FS-UMOUNT"
 
   if [ -z "$FSDIR" ]; then
-    echo "error: require fsdir"
+    echo "$ID E: require: fsdir"
     exit 1
   fi
 
@@ -402,7 +402,7 @@ if [ $FSUMOUNT -ne 0 ]; then
     umount $FSDIR
     { set +ex; } 2>/dev/null
   else
-    echo info: filesystem $FSDIR not mounted
+    echo "$ID I: filesystem $FSDIR not mounted"
   fi
 fi
 
@@ -415,7 +415,7 @@ if [ $ESHOW -eq 1 ]; then
 
   if [ "$A" != "bsync" -a  "$ESHOW_RE" = "" ]; then
     if [ ! -f $EDIR/$A ]; then
-      echo file not found: $EDIR/$A
+      echo "$ID I: file not found: $EDIR/$A"
     else
       set -ex
       cat $EDIR/$A
@@ -441,7 +441,7 @@ if [ $EEDIT -eq 1 ]; then
   echo "$ID: stage: ENV-EDIT"
 
   if [ ! -d $EDIR ]; then
-    echo directory not found: $EDIR
+    echo "$ID E: directory not found: $EDIR"
   else
     if [ "$EDITOR" != "" ]; then
       set -ex
