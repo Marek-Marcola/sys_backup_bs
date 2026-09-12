@@ -360,7 +360,7 @@ if [ $BACKUP_SET -ne 0 ]; then
   echo "$ID: stage: BACKUP-SET (EVAL=$EVAL)"
 
   if [ -z "$BSET" ]; then
-    echo "$ID E: require: bset"
+    echo "$ID: E: require: bset"
     exit 1
   fi
 
@@ -377,7 +377,7 @@ if [ $BACKUP_SET -ne 0 ]; then
       { set +ex; } 2>/dev/null
     else
       echo
-      echo "$ID E: backup spec not found: bs-bsync-$i"
+      echo "$ID: E: backup spec not found: bs-bsync-$i"
     fi
   done
 fi
@@ -390,7 +390,7 @@ if [ $FSUMOUNT -ne 0 ]; then
   echo "$ID: stage: FS-UMOUNT"
 
   if [ -z "$FSDIR" ]; then
-    echo "$ID E: require: fsdir"
+    echo "$ID: E: require: fsdir"
     exit 1
   fi
 
@@ -402,7 +402,7 @@ if [ $FSUMOUNT -ne 0 ]; then
     umount $FSDIR
     { set +ex; } 2>/dev/null
   else
-    echo "$ID I: filesystem $FSDIR not mounted"
+    echo "$ID: I: filesystem $FSDIR not mounted"
   fi
 fi
 
@@ -415,7 +415,7 @@ if [ $ESHOW -eq 1 ]; then
 
   if [ "$A" != "bsync" -a  "$ESHOW_RE" = "" ]; then
     if [ ! -f $EDIR/$A ]; then
-      echo "$ID I: file not found: $EDIR/$A"
+      echo "$ID: I: file not found: $EDIR/$A"
     else
       set -ex
       cat $EDIR/$A
@@ -441,7 +441,7 @@ if [ $EEDIT -eq 1 ]; then
   echo "$ID: stage: ENV-EDIT"
 
   if [ ! -d $EDIR ]; then
-    echo "$ID E: directory not found: $EDIR"
+    echo "$ID: E: directory not found: $EDIR"
   else
     if [ "$EDITOR" != "" ]; then
       set -ex
