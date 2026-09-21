@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260910"
+VERSION_BIN="260922"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -331,8 +331,10 @@ if [ $BACKUP_ONLINE -ne 0 ]; then
 
     pg_basebackup -V
     mkdir -pv $D/$TDIR
-    pg_basebackup -D $D/$TDIR "${PGOPTS[@]}" $OBOPTS 2>&1
-    ls -lh $D/$TDIR
+    cd $D/$TDIR
+    pg_basebackup -D . "${PGOPTS[@]}" $OBOPTS 2>&1
+    chmod a+r ./*
+    ls -lh
 
     { set +x; } 2>/dev/null
     ) 2>&1 | stdbuf -o0 sed 's/^/  /' | GREP_COLORS="mt=01;35" grep --color=auto ".*"
@@ -341,7 +343,7 @@ if [ $BACKUP_ONLINE -ne 0 ]; then
     echo pg_basebackup -V
     echo mkdir -pv $D/$TDIR
     echo pg_basebackup -D $D/$TDIR "${PGOPTS[@]}" $OBOPTS
-    echo ls -lh $D/$TDIR
+    echo ls -lh
     ) 2>&1 | stdbuf -o0 sed 's/^/  /' | GREP_COLORS="mt=01;35" grep --color=auto ".*"
   fi
 
