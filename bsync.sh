@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260912"
+VERSION_BIN="260928"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -370,14 +370,14 @@ if [ $BACKUP_SET -ne 0 ]; then
   BSET=$(echo $BSET|sed 's/,/ /g')
 
   for i in $BSET; do
-    if [ $(type -t bs-bsync-$i) ]; then
+    if [ $(type -t b-bsync-$i) ]; then
       echo
       set -ex
-      bs-bsync-$i -B $EVAL_OPT $QUIET_OPT
+      b-bsync-$i -B $EVAL_OPT $QUIET_OPT
       { set +ex; } 2>/dev/null
     else
       echo
-      echo "$ID: E: backup spec not found: bs-bsync-$i"
+      echo "$ID: E: backup spec not found: b-bsync-$i"
     fi
   done
 fi
