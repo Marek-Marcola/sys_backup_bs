@@ -3,16 +3,19 @@ backup script bpgsql
 
 Config
 ------
-bpgsql controller:
+bpgsql env:
 
-    # cm bpgsql
-    [cman.sh]: stage: APP-IMAGE (re: *bpgsql*)
-    App              Image                             Ver
-    bc-bpgsql-admin  scr.dc.local:5443/is/pgsql:17.11  17.11
+    # cat /usr/local/etc/bpgsql.d/b-bpgsql-admin
+    PGCL=admin
+    PGOPTS=( -d "host=a511 port=5401 user=dbrep password=dbpass" )
 
-    # bc-bpgsql-admin -s
-    [bc-bpgsql-admin]: stage: ENV-SHOW (re: **)
-    + cat /usr/local/etc/cman.d/bc-bpgsql-admin
+bpgsql aliases:
+
+    # bpgsql.sh -L -x
+
+cman bpgsql controller:
+
+    # cat /usr/local/etc/cman.d/bc-bpgsql-admin
     : ${V:=17.11}
     : ${I:=scr.dc.local:5443/is/pgsql:$V}
     BADIR=/var/opt/backup/$APN
@@ -32,3 +35,7 @@ bpgsql controller:
     "
     : ${ARGS:="bash -l b-$APN-$API"}
     : ${ARGS2:="-b"}
+
+cman aliases:
+
+    # cm -L -x
