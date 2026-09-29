@@ -12,7 +12,7 @@ bsync env:
     FSDEV=LABEL:disk
     FSDIR=/vol/mnt
 
-    # cat /usr/local/etc/bsync.d/bs-bsync-d-k1
+    # cat /usr/local/etc/bsync.d/b-bsync-d-k1
     HN=k1
 
     ROOT=$FSDIR/$APN/$HN
@@ -27,7 +27,7 @@ bsync env:
      "root@$HN:/var/opt/backup/ $ROOT/var/opt/backup"
     )
 
-    # cat /usr/local/etc/bsync.d/bs-bsync-d-k2
+    # cat /usr/local/etc/bsync.d/b-bsync-d-k2
     HN=k2
 
     ROOT=$FSDIR/$APN/$HN
@@ -50,7 +50,7 @@ bsync env:
 
 bsync env set:
 
-    # cat /usr/local/etc/bsync.d/bs-bsync-s-k
+    # cat /usr/local/etc/bsync.d/b-bsync-s-k
     [[ -z "$BSET" ]] && BSET="d-k1,d-k2"
 
 bsync aliases:

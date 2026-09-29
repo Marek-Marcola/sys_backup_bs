@@ -5,7 +5,7 @@ Config
 ------
 bnet env:
 
-    # cat /usr/local/etc/bnet.d/bs-bnet-dc1-mikrotik 
+    # cat /usr/local/etc/bnet.d/b-bnet-dc1-mikrotik 
     DEVS=(
       s111 s112 s113
     )
