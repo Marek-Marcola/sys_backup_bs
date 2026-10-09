@@ -50,8 +50,14 @@ bsync env:
 
 bsync env set:
 
-    # cat /usr/local/etc/bsync.d/b-bsync-s-k
+    # cat /usr/local/etc/bsync.d/b-bsync-sd-k
     [[ -z "$BSET" ]] && BSET="d-k1,d-k2"
+
+bsync env super-set:
+
+    # cat /usr/local/etc/bsync.d/b-bsync-ssd-all
+    [[ -z "$BSSET" ]] && BSSET="sd-k"
+
 
 bsync aliases:
 

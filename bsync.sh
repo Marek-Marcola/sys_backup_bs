@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="260928"
+VERSION_BIN="261009"
 
 SN="${0##*/}"
 ID="[$SN]"
@@ -12,6 +12,7 @@ FSMOUNT=0
 FSUMOUNT=0
 BACKUP=0
 BACKUP_SET=0
+BACKUP_SSET=0
 ESHOW=0
 ESHOW_RE=""
 EEDIT=0
@@ -83,6 +84,11 @@ while [ $# -gt 0 ]; do
       [[ -n "$2" && ${2:0:1} != "-" ]] && BSET="$2" && shift
       shift
       ;;
+    -BSS)
+      BACKUP_SSET=1
+      [[ -n "$2" && ${2:0:1} != "-" ]] && BSSET="$2" && shift
+      shift
+      ;;
     -x)
       EVAL=1
       shift
@@ -108,6 +114,20 @@ while [ $# -gt 0 ]; do
     -bsxm)
       BACKUP_SET=1
       [[ -n "$2" && ${2:0:1} != "-" ]] && BSET="$2" && shift
+      EVAL=1
+      FSMOUNT=1
+      FSUMOUNT=1
+      shift
+      ;;
+    -bssx)
+      BACKUP_SSET=1
+      [[ -n "$2" && ${2:0:1} != "-" ]] && BSSET="$2" && shift
+      EVAL=1
+      shift
+      ;;
+    -bssxm)
+      BACKUP_SSET=1
+      [[ -n "$2" && ${2:0:1} != "-" ]] && BSSET="$2" && shift
       EVAL=1
       FSMOUNT=1
       FSUMOUNT=1
@@ -150,13 +170,16 @@ if [ $HELP -eq 1 ]; then
   echo "$SN -u                        # fs umount"
   echo "$SN -M                        # alias: -m -u"
   echo ""
-  echo "$SN -B  [-x]                  # backup test,exec"
-  echo "$SN -BS [list] [-x]           # backup set test,exec"
+  echo "$SN -B   [-x]                 # backup test,exec"
+  echo "$SN -BS  [list] [-x]          # backup set test,exec"
+  echo "$SN -BSS [list] [-x]          # backup super-set test,exec"
   echo ""
-  echo "$SN -bx                       # alias: -B  -x"
-  echo "$SN -bxm                      # alias: -B  -x -m -u"
-  echo "$SN -bsx  [list]              # alias: -BS -x"
-  echo "$SN -bsxm [list]              # alias: -BS -x -m -u"
+  echo "$SN -bx                       # alias: -B   -x"
+  echo "$SN -bxm                      # alias: -B   -x -m -u"
+  echo "$SN -bsx   [list]             # alias: -BS  -x"
+  echo "$SN -bsxm  [list]             # alias: -BS  -x -m -u"
+  echo "$SN -bssx  [list]             # alias: -BSS -x"
+  echo "$SN -bssxm [list]             # alias: -BSS -x -m -u"
   echo ""
   echo "$SN -l                        # list backup"
   echo "$SN                           # info"
@@ -215,6 +238,11 @@ if [ $QUIET -eq 0 ]; then
     echo "BSET   = $(echo $BSET|sed 's/ /\n/g'|sed '2,$s/^/         /')"
   else
     echo "BSET   = [none]"
+  fi
+  if [ -n "$BSSET" ]; then
+    echo "BSSET  = $(echo $BSSET|sed 's/ /\n/g'|sed '2,$s/^/         /')"
+  else
+    echo "BSSET  = [none]"
   fi
   echo "OPTS   = "${OPTS[@]}""
   echo -n "SYNC   = "
@@ -378,6 +406,36 @@ if [ $BACKUP_SET -ne 0 ]; then
     else
       echo
       echo "$ID: E: backup spec not found: b-bsync-$i"
+    fi
+  done
+fi
+
+#
+# stage: BACKUP-SSET
+#
+if [ $BACKUP_SSET -ne 0 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: BACKUP-SSET (EVAL=$EVAL)"
+
+  if [ -z "$BSSET" ]; then
+    echo "$ID: E: require: bsset"
+    exit 1
+  fi
+
+  [[ $EVAL  -ne 1 ]] && EVAL_OPT=""  || EVAL_OPT="-x"
+  [[ $QUIET -ne 1 ]] && QUIET_OPT="" || QUIET_OPT="-q"
+
+  BSSET=$(echo $BSSET|sed 's/,/ /g')
+
+  for i in $BSSET; do
+    if [ $(type -t b-bsync-$i) ]; then
+      echo
+      set -ex
+      b-bsync-$i -BS $EVAL_OPT $QUIET_OPT
+      { set +ex; } 2>/dev/null
+    else
+      echo
+      echo "$ID: E: backup set spec not found: b-bsync-$i"
     fi
   done
 fi
