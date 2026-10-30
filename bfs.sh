@@ -1,9 +1,9 @@
 #!/bin/bash
 
-VERSION_BIN="261022"
+VERSION_BIN="261030"
 
 SN="${0##*/}"
-ID="[$SN]"
+ID="[${SN%.sh}]"
 
 ARCHIVE=0
 ARCHIVE_DIR="/tmp"
