@@ -1,9 +1,9 @@
 #!/bin/bash
 
-VERSION_BIN="261009"
+VERSION_BIN="261030"
 
 SN="${0##*/}"
-ID="[$SN]"
+ID="[${SN%.sh}]"
 
 VERSION=0
 STAGE_LIST=0
