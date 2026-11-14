@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="261030"
+VERSION_BIN="261115"
 
 SN="${0##*/}"
 ID="[${SN%.sh}]"
@@ -109,12 +109,14 @@ while [ $# -gt 0 ]; do
       BACKUP_SET=1
       [[ -n "$2" && ${2:0:1} != "-" ]] && BSET="$2" && shift
       EVAL=1
+      QUIET=1
       shift
       ;;
     -bsxm)
       BACKUP_SET=1
       [[ -n "$2" && ${2:0:1} != "-" ]] && BSET="$2" && shift
       EVAL=1
+      QUIET=1
       FSMOUNT=1
       FSUMOUNT=1
       shift
@@ -123,12 +125,14 @@ while [ $# -gt 0 ]; do
       BACKUP_SSET=1
       [[ -n "$2" && ${2:0:1} != "-" ]] && BSSET="$2" && shift
       EVAL=1
+      QUIET=1
       shift
       ;;
     -bssxm)
       BACKUP_SSET=1
       [[ -n "$2" && ${2:0:1} != "-" ]] && BSSET="$2" && shift
       EVAL=1
+      QUIET=1
       FSMOUNT=1
       FSUMOUNT=1
       shift
