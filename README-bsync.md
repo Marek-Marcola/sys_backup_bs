@@ -1,6 +1,8 @@
 backup script bsync
 ===================
 
+Backup filesystem with rsync.
+
 Config
 ------
 bsync env:

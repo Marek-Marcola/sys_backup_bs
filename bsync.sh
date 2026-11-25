@@ -1,6 +1,8 @@
 #!/bin/bash
+#
+# Backup filesystem with rsync.
 
-VERSION_BIN="261115"
+VERSION_BIN="261125"
 
 SN="${0##*/}"
 ID="[${SN%.sh}]"
