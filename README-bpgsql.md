@@ -1,6 +1,8 @@
 backup script bpgsql
 ====================
 
+Backup postgres database.
+
 Config
 ------
 bpgsql env:
