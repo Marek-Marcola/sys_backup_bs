@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# Backup filesystem with tar.
 
 VERSION_BIN="261125"
 

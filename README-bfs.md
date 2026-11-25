@@ -1,6 +1,8 @@
 backup script bfs
 =================
 
+Backup filesystem with tar.
+
 Config
 ------
 bfs env:
