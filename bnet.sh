@@ -1,6 +1,8 @@
 #!/bin/bash
+#
+# Backup network device config (mikrotik,hpsw,tplink).
 
-VERSION_BIN="261030"
+VERSION_BIN="261125"
 
 SN="${0##*/}"
 ID="[${SN%.sh}]"

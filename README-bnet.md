@@ -1,6 +1,8 @@
 backup script bnet
 ==================
 
+Backup network device config (mikrotik,hpsw,tplink).
+
 Config
 ------
 bnet env:
