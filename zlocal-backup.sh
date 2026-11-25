@@ -18,6 +18,7 @@ bs() {
 
   if [ "$1" = "-h" -o "$1" = "-help" -o "$1" = "--help" ]; then
     echo "${FUNCNAME[0]} -V|-ver                   # version"
+    echo "${FUNCNAME[0]} -arch [dir]               # archive"
     echo "${FUNCNAME[0]} -inst [host_list]    [-x] # install with rsync"
     echo "${FUNCNAME[0]} -anpb [host_pattern] [-x] # install with ansible"
     echo "${FUNCNAME[0]} -bc                       # backup controller list"
@@ -29,12 +30,14 @@ bs() {
     bpgsql.sh -ver
     bnet.sh -ver
   } | column -t
+  elif [ "$1" = "-arch" ]; then
+    bfs.sh "$@"
   elif [ "$1" = "-inst" ]; then
-    bfs.sh $@
+    bfs.sh "$@"
   elif [ "$1" = "-anpb" ]; then
-    bfs.sh $@
+    bfs.sh "$@"
   elif [ "$1" = "-bc" ]; then
-    bfs.sh $@
+    bfs.sh "$@"
   else
     for d in /usr/local/etc/{bfs.d,bsync.d,bpgsql.d,bnet.d}; do
       if [ -d "$d" ]; then
