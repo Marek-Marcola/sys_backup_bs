@@ -242,7 +242,7 @@ if [ $ARCHIVE -eq 1 ]; then
     exit 1
   fi
 
-  D=bs-$(date "+%y%m%d%H%M")
+  D=sys_backup_bs_$(date "+%y%m%d%H%M")
   F=$ARCHIVE_DIR/$D.tar
 
   set -x
