@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION_BIN="261030"
+VERSION_BIN="261125"
 
 SN="${0##*/}"
 ID="[${SN%.sh}]"
@@ -14,6 +14,7 @@ INSTALL_ANPB_HP="bs"
 VERSION=0
 STAGE_LIST=0
 LINK=0
+BCLIST=0
 BACKUP=0
 BACKUP_LIST=0
 ROTATE=0
@@ -67,6 +68,11 @@ while [ $# -gt 0 ]; do
       ;;
     -x)
       EVAL=1
+      shift
+      ;;
+    -bc)
+      BCLIST=1
+      QUIET=1
       shift
       ;;
     -s)
@@ -152,6 +158,8 @@ if [ $HELP -eq 1 ]; then
   echo "$SN -stage                    # stage list"
   echo ""
   echo "$SN -L [-x]                   # link show,exec"
+  echo ""
+  echo "$SN -bc                       # backup controller list"
   echo ""
   echo "$SN -s [re]                   # env show"
   echo "$SN -E                        # env edit"
@@ -384,6 +392,21 @@ if [ $LINK -ne 0 ]; then
       echo "# ln -svr $LSRC $LDIR/$E"
     fi
   done
+fi
+
+#
+# stage: BCLIST
+#
+if [ $BCLIST -ne 0 ]; then
+  (( $s != 0 )) && echo; ((++s))
+  echo "$ID: stage: BCLIST"
+
+  if [[ ! $(type -t cman.sh) ]]; then
+    echo "$ID: E: command not found: cman.sh"
+    exit 1
+  fi
+
+  cman.sh "@(c-bfs|c-bsync|c-bpgsql|c-bnet)"
 fi
 
 #
